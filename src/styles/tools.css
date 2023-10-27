@@ -1,0 +1,10 @@
+.tools {
+    --interval: var(--interval-base);
+
+    background-color: var(--color-theme-dark);
+    padding: var(--interval);
+    display: flex;
+    gap: var(--interval);
+    width: 100%;
+    box-shadow: 0 0 var(--interval-big) #0004;
+}

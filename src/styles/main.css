@@ -1,0 +1,21 @@
+.main {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.main__info {
+    padding: var(--interval-big);
+    text-shadow: 0 0 var(--interval-micro) var(--color-theme-black);
+}
+
+.main__canvas {
+}
+
+.main__info,
+.main__canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}

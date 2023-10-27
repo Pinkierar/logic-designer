@@ -1,0 +1,21 @@
+{
+  "name": "logic-designer",
+  "version": "1.0.0",
+  "description": "WEB application for developing logical circuits",
+  "author": "Pinkierar",
+  "homepage": "https://pinkierar.ru/exp/js/Logic",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "p5": "1.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "@types/p5": "^1.3.3"
+  }
+}

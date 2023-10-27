@@ -1,0 +1,18 @@
+:root {
+    --color-theme-white-gray: #d5dde0;
+    --color-theme-white: #c1d9ea;
+    --color-theme-light: #81bbe6;
+    --color-theme-soft: #4992c1;
+    --color-theme-base: #467ca5;
+    --color-theme-hard: #3c5f78;
+    --color-theme-dark: #274051;
+    --color-theme-black: #1b1e20;
+
+    --interval-large: 2em;
+    --interval-big: 1em;
+    --interval-base: 0.5em;
+    --interval-small: 0.25em;
+    --interval-micro: 0.125em;
+
+    --border: var(--interval-micro) solid var(--color-theme-black);
+}
