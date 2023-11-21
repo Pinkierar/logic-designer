@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "WEB application for developing logical circuits",
   "author": "Pinkierar",
+  "repository": "https://github.com/Pinkierar/logic-designer",
   "homepage": "https://pinkierar.ru/exp/js/Logic",
   "type": "module",
   "scripts": {
