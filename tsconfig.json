@@ -10,24 +10,32 @@
     ],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "jsx": "react-jsx",
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
-    "types": [
-      "vite/client"
-    ],
     "baseUrl": ".",
     "paths": {
-      "@styles/*": ["src/styles/*.css"],
-      "@html/*": ["src/html/*.html?raw"],
-      "@includes/*": ["src/includes/*"]
+      "#components/*": [
+        "src/components/*"
+      ],
+      "#includes/*": [
+        "src/includes/*"
+      ],
+      "#styles/*": [
+        "src/styles/*"
+      ]
     }
   },
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
   ]
 }
