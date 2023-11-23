@@ -2,8 +2,7 @@ type Label = {
   name: string,
 }
 
-type File = Label & {
-};
+type File = Label & {};
 
 type Folder = Label & {
   content: Item[],

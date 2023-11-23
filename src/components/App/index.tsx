@@ -1,9 +1,18 @@
 import {Explorer} from '#components/Explorer';
+import {Item as ExplorerItem} from '#components/Explorer/types';
 import {Menu} from '#components/Menu';
+import {useEffect, useState} from 'react';
 import {GrCli} from 'react-icons/gr';
+import {ExplorerRepository} from '../../Repository/Explorer';
 import style from './style.module.css';
 
 export const App = () => {
+  const [explorer, setExplorer] = useState<ExplorerItem[]>([]);
+
+  useEffect(() => {
+    ExplorerRepository.get().then(explorer => setExplorer(explorer))
+  }, []);
+
   return (
     <main className={style.base}>
       <Menu>
@@ -58,127 +67,7 @@ export const App = () => {
       </Menu>
       <div className={style.content}>
         <Explorer>
-          {[
-            {
-              name: 'logic-designer',
-              content: [
-                {
-                  name: 'public',
-                  content: [
-                    {
-                      name: 'favicon.svg',
-                    },
-                  ],
-                },
-                {
-                  name: 'src',
-                  content: [
-                    {
-                      name: 'components',
-                      content: [
-                        {
-                          name: 'App',
-                          content: [
-                            {
-                              name: 'style.module.css',
-                            },
-                            {
-                              name: 'index.tsx',
-                            },
-                          ],
-                        },
-                        {
-                          name: 'Explorer',
-                          content: [
-                            {
-                              name: 'style.module.css',
-                            },
-                            {
-                              name: 'types.ts',
-                            },
-                            {
-                              name: 'index.tsx',
-                            },
-                            {
-                              name: 'Item.tsx',
-                            },
-                          ],
-                        },
-                        {
-                          name: 'Menu',
-                          content: [
-                            {
-                              name: 'style.module.css',
-                            },
-                            {
-                              name: 'types.ts',
-                            },
-                            {
-                              name: 'index.tsx',
-                            },
-                            {
-                              name: 'Item.tsx',
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    {
-                      name: 'styles',
-                      content: [
-                        {
-                          name: 'global.css',
-                        },
-                        {
-                          name: 'vars.css',
-                        },
-                      ],
-                    },
-                    {
-                      name: 'types',
-                      content: [
-                        {
-                          name: 'index.d.ts',
-                        },
-                        {
-                          name: 'types.d.ts',
-                        },
-                      ],
-                    },
-                    {
-                      name: 'utils',
-                      content: [
-                        {
-                          name: 'cl.ts',
-                        },
-                        {
-                          name: 'isTruthy.ts',
-                        },
-                      ],
-                    },
-                    {
-                      name: 'index.tsx',
-                    },
-                  ],
-                },
-                {
-                  name: '.gitignore',
-                },
-                {
-                  name: 'index.html',
-                },
-                {
-                  name: 'package.json',
-                },
-                {
-                  name: 'tsconfig.json',
-                },
-                {
-                  name: 'vite.config.ts',
-                },
-              ],
-            },
-          ]}
+          {explorer}
         </Explorer>
         <div className={style.view}></div>
       </div>
