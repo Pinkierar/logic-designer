@@ -25,6 +25,9 @@
       "#includes/*": [
         "src/includes/*"
       ],
+      "#utils/*": [
+        "src/utils/*"
+      ],
       "#styles/*": [
         "src/styles/*"
       ]
