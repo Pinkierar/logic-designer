@@ -1,5 +1,15 @@
 import {IconType} from 'react-icons';
 
-type MenuLabel = { label: string | IconType };
-export type MenuCommand = MenuLabel & { command: () => void };
-export type MenuContainer = MenuLabel & { list: (MenuCommand | MenuContainer)[] };
+type Label = {
+  label: string | IconType,
+};
+
+type Command = Label & {
+  command: () => void,
+};
+
+type Container = Label & {
+  list: Item[],
+};
+
+export type Item = Command | Container;

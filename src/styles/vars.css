@@ -1,12 +1,21 @@
 :root {
-    --color-theme: #2E436E;
-
-    --color-theme-white: #DFE1E5;
+/*    --color-theme-white: #DFE1E5;
     --color-theme-light: #43454A;
     --color-theme-soft: #2B2D30;
     --color-theme-base: #232323;
     --color-theme-hard: #1E1F22;
     --color-theme-dark: #1A1A1A;
+
+    --color-theme-accent-light: #4FC3F7;
+    --color-theme-accent-base: #3574F0;
+    --color-theme-accent-dark: #2E436E;*/
+
+    --color-theme-white: #CDF;
+    --color-theme-light: #259;
+    --color-theme-soft: #06B;
+    --color-theme-base: #FFF;
+    --color-theme-hard: #FFF;
+    --color-theme-dark: #235;
 
     --interval-large: 60px;
     --interval-big: 30px;
@@ -19,6 +28,6 @@
     --timing-base: 200ms;
     --timing-tick: 0ms;
 
-    --z-index-header: 9999;
+    --z-index-top: 9999;
     --z-index-up: 1;
 }

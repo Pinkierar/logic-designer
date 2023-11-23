@@ -1,18 +1,18 @@
 import {cl} from '#utils/cl';
-import {HTMLAttributes} from 'react';
+import {HTMLAttributes, memo} from 'react';
 import {MenuItem} from './Item';
-import {MenuCommand, MenuContainer} from './types';
 import style from './style.module.css';
+import {Item} from './types';
 
 type MenuPropsMin = {
-  children: (MenuCommand | MenuContainer)[],
+  children: Item[],
 };
 
 type MenuProps =
   Omit<HTMLAttributes<HTMLElement>, keyof MenuPropsMin>
   & MenuPropsMin;
 
-export const Menu = (props: MenuProps) => {
+export const Menu = memo<MenuProps>(props => {
   const {
     children,
     className,
@@ -22,12 +22,12 @@ export const Menu = (props: MenuProps) => {
   return (
     <section className={cl(style.menu, className)} {...otherProps}>
       <ul className={style.list}>
-        {children.map(item => (
-          <MenuItem>
+        {children.map((item, index) => (
+          <MenuItem key={index}>
             {item}
           </MenuItem>
         ))}
       </ul>
     </section>
   );
-};
+});

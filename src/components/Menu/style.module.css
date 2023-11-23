@@ -33,11 +33,6 @@
     text-align: left;
 }
 
-.command > svg,
-.label > span > svg {
-    pointer-events: none;
-}
-
 
 /* Relative styles */
 

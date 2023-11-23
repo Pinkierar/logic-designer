@@ -1,21 +1,33 @@
 .base {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
     width: 100%;
     height: 100%;
 
-    font-family: Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    font-size: 20px;
+    line-height: 1em;
+    letter-spacing: 0.04em;
+
     background-color: var(--color-theme-dark);
     color: var(--color-theme-white);
-    font-size: 20px;
-}
 
-.menu {
+    cursor: default;
 }
 
 .content {
+    flex-grow: 1;
+
+    width: 100%;
+
+    display: flex;
+}
+
+.view {
     flex-grow: 1;
 }

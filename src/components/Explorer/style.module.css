@@ -1,0 +1,57 @@
+.explorer {
+    padding: var(--interval-base);
+}
+
+.item {
+
+}
+
+.folder {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    display: flex;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.file {
+    display: flex;
+}
+
+.collapsed {
+
+}
+
+
+/**/
+
+.label,
+.folder,
+.file,
+.content {
+    gap: var(--interval-small)
+}
+
+
+/**/
+
+.folder > ul {
+    padding-left: calc(var(--interval-small) * 2 + 2em);
+}
+
+
+/* Collapsed */
+
+.folder:not(.collapsed) > .label > button > svg {
+    transform: rotate(90deg);
+}
+
+.collapsed .content {
+    display: none;
+}

@@ -2,10 +2,10 @@ import {memo} from 'react';
 import {GrFormNext} from 'react-icons/gr';
 
 import style from './style.module.css';
-import {MenuCommand, MenuContainer} from './types';
+import {Item} from './types';
 
 type MenuItemProps = {
-  children: MenuContainer | MenuCommand,
+  children: Item,
 };
 
 export const MenuItem = memo<MenuItemProps>(props => {
@@ -28,8 +28,8 @@ export const MenuItem = memo<MenuItemProps>(props => {
             <GrFormNext/>
           </div>
           <ul className={style.list}>
-            {children.list.map(item => (
-              <MenuItem>
+            {children.list.map((item, index) => (
+              <MenuItem key={index}>
                 {item}
               </MenuItem>
             ))}
