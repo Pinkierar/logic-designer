@@ -9,6 +9,7 @@
   white-space: nowrap;
   border-bottom: solid var(--interval-minimum) var(--color-theme-hard);
   background-color: var(--background);
+  z-index: var(--z-index-up);
 
   --background: var(--color-theme-soft);
   --hovered: var(--color-theme-light);

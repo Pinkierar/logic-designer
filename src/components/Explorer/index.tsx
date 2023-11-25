@@ -17,6 +17,7 @@ import {Item} from './types';
 
 type ExplorerPropsMin = {
   children: Item[],
+  onResize?: () => void,
 };
 
 type ExplorerProps =
@@ -37,6 +38,7 @@ export const Explorer = memo<ExplorerProps>(props => {
   const {
     children,
     className,
+    onResize,
     ...otherProps
   } = props;
 
@@ -56,6 +58,7 @@ export const Explorer = memo<ExplorerProps>(props => {
     if (!dragging) return;
 
     setWidth(event.pageX);
+    onResize && onResize();
   }, [dragging]);
   const upHandler = useCallback(() => setDragging(false), []);
 

@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   resolve: {
     alias: {
-      '#includes': path.resolve(__dirname, './src/includes'),
+      '#app': path.resolve(__dirname, './src/app'),
       '#repositories': path.resolve(__dirname, './src/repositories'),
       '#hooks': path.resolve(__dirname, './src/hooks'),
       '#utils': path.resolve(__dirname, './src/utils'),

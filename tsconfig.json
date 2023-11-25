@@ -22,8 +22,8 @@
       "#components/*": [
         "src/components/*"
       ],
-      "#includes/*": [
-        "src/includes/*"
+      "#app": [
+        "src/app"
       ],
       "#repositories/*": [
         "src/repositories/*"
