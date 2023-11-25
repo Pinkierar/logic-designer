@@ -4,7 +4,7 @@ import {Item as ExplorerItem} from '#components/Explorer/types';
 import {Menu} from '#components/Menu';
 import {View} from '#components/View';
 import {ExplorerRepository} from '#repositories/Explorer';
-import {memo, useCallback, useEffect, useState} from 'react';
+import {memo, useEffect, useState} from 'react';
 import {GrCli} from 'react-icons/gr';
 import style from './style.module.scss';
 

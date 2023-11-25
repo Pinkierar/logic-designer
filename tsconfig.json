@@ -25,6 +25,9 @@
       "#app": [
         "src/app"
       ],
+      "#graphics": [
+        "src/graphics"
+      ],
       "#repositories/*": [
         "src/repositories/*"
       ],

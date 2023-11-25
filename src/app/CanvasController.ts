@@ -1,6 +1,7 @@
 export class CanvasController {
   public parent: HTMLElement | null = null;
   public readonly canvas: HTMLCanvasElement;
+  public setSize?: (width: number, height: number) => void;
 
   public constructor() {
     this.canvas = CanvasController.createCanvas();
@@ -10,41 +11,46 @@ export class CanvasController {
     this.resizeHandler();
   }
 
-  public setParent(parent: HTMLElement) {
+  public setParent(parent: HTMLElement): void {
     this.parent = parent;
-    this.parent.style.position = 'relative';
+    parent.style.position = 'relative';
 
     this.resizeHandler();
   }
 
-  public resizeHandler() {
-    if (!this.parent) return;
+  private setSizeStyle(width: number, height: number): void {
+    const {canvas: {style}} = this;
 
-    const {width, height} = this.parent.getBoundingClientRect();
-
-    this.setSize(width, height);
+    style.width = `${width}px`;
+    style.height = `${height}px`;
   }
 
-  private setSize(width: number, height: number) {
-    this.canvas.style.width = `${width}px`;
-    this.canvas.style.height = `${height}px`;
+  public resizeHandler(): void {
+    const {parent} = this;
 
-    this.canvas.width = width;
-    this.canvas.height = height;
+    if (!parent || !this.setSize) return;
+
+    const zoom = window.devicePixelRatio;
+
+    const {width, height} = parent.getBoundingClientRect();
+
+    const sizeWidth = width;
+    const sizeHeight = height;
+
+    this.setSizeStyle(sizeWidth, sizeHeight);
+    this.setSize(sizeWidth, sizeHeight);
   }
 
   private static createCanvas(): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '0';
-    canvas.style.height = '0';
+    const {style} = canvas;
+    style.position = 'absolute';
+    style.top = style.left = style.width = style.height = '0';
 
     return canvas;
   }
 
-  private binds() {
+  private binds(): void {
     this.resizeHandler = this.resizeHandler.bind(this);
   }
 }

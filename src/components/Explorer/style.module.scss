@@ -61,10 +61,6 @@
     position: absolute;
     padding: var(--interval-base);
   }
-
-  &:not(.dragging) {
-    transition: var(--timing-base);
-  }
 }
 
 .folder {

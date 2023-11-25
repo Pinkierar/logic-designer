@@ -58,7 +58,6 @@ export const Explorer = memo<ExplorerProps>(props => {
     if (!dragging) return;
 
     setWidth(event.pageX);
-    onResize && onResize();
   }, [dragging]);
   const upHandler = useCallback(() => setDragging(false), []);
 
@@ -78,6 +77,12 @@ export const Explorer = memo<ExplorerProps>(props => {
 
     input.focus();
   }, [inputRef.current, searching]);
+
+  useEffect(() => {
+    if (!onResize) return;
+
+    onResize();
+  }, [width, rolled]);
 
   const keyDownHandler = useCallback((event: KeyboardEvent) => {
     if (event.code !== 'Escape') return;
