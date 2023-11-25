@@ -1,0 +1,82 @@
+* {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  cursor: inherit;
+  user-select: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  background: none;
+  scrollbar-width: thin;
+  scrollbar-color: #FFF2 #FFF1;
+
+  &,
+  &::before,
+  &::after {
+    accent-color: var(--color-theme-white);
+  }
+
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #FFF2;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #FFF0;
+  }
+
+  &::-webkit-scrollbar-track:hover {
+    background-color: #FFF1;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}
+
+html,
+body,
+#root {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-width: 300px;
+  height: 100%;
+  background-color: var(--color-theme-dark);
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+button {
+  display: flex;
+  cursor: pointer;
+}
+
+input {
+  width: 0;
+  cursor: text;
+
+  &[type='search'] {
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration {
+      display: none;
+    }
+  }
+}

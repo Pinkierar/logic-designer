@@ -22,8 +22,17 @@
       "#components/*": [
         "src/components/*"
       ],
-      "#includes/*": [
-        "src/includes/*"
+      "#app": [
+        "src/app"
+      ],
+      "#repositories/*": [
+        "src/repositories/*"
+      ],
+      "#hooks": [
+        "src/hooks/index.ts"
+      ],
+      "#utils/*": [
+        "src/utils/*"
       ],
       "#styles/*": [
         "src/styles/*"

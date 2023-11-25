@@ -1,8 +1,9 @@
-import '#styles/vars.css';
-import '#styles/global.css';
+import {canvas} from '#app';
+import {App} from '#components/App';
+import '#styles/global.scss';
+import '#styles/vars.scss';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {App} from '#components/App';
 
 window.addEventListener('load', () => {
   const root = document.getElementById('root');
@@ -10,7 +11,9 @@ window.addEventListener('load', () => {
 
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
-      <App/>
+      <App>
+        {canvas}
+      </App>
     </React.StrictMode>,
   );
 });
