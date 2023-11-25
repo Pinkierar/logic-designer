@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import {Simulate} from 'react-dom/test-utils';
 import {GrSearch, GrStorage} from 'react-icons/gr';
 import {ExplorerItem} from './Item';
 import style from './style.module.scss';
@@ -40,6 +41,7 @@ export const Explorer = memo<ExplorerProps>(props => {
     ...otherProps
   } = props;
 
+  const documentRef = useRef(document);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [searching, setSearching] = useState<boolean>(false);
@@ -56,16 +58,15 @@ export const Explorer = memo<ExplorerProps>(props => {
   }, [dragging]);
   const upHandler = useCallback(() => setDragging(false), []);
 
-  const searchBlurHandler = useCallback(() => {
-    setSearching(false);
-    setSearch('');
-  }, []);
+  const searchBlurHandler = useCallback(() => setSearching(false), []);
   const searchClickHandler = useCallback(() => setSearching(true), []);
   const searchingHandler = useCallback((event: FormEvent<HTMLInputElement>) => {
     setSearch(event.currentTarget.value);
   }, []);
 
   useEffect(() => {
+    setSearch('');
+
     if (!searching) return;
 
     if (!inputRef.current) return;
@@ -74,13 +75,27 @@ export const Explorer = memo<ExplorerProps>(props => {
     input.focus();
   }, [inputRef.current, searching]);
 
+  const keyDownHandler = useCallback((event: KeyboardEvent) => {
+    if (event.code !== 'Escape') return;
+
+    setSearching(false);
+  }, []);
+
+  const touchMoveHandler = useCallback((event: TouchEvent) => {
+    if (!dragging) return;
+
+    event.preventDefault();
+  }, [dragging]);
+
+  useEventListener(
+    'touchmove',
+    touchMoveHandler,
+    documentRef,
+    {passive: false},
+  );
   useEventListener('pointermove', moveHandler);
   useEventListener('pointerup', upHandler);
-  useEventListener('keydown', e => {
-    if (e.code !== 'Escape') return;
-
-    searchBlurHandler();
-  }, inputRef);
+  useEventListener('keydown', keyDownHandler, inputRef);
 
   return (
     <section className={cl(style.container, className)} {...otherProps}>

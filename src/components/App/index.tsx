@@ -2,16 +2,16 @@ import {Explorer} from '#components/Explorer';
 import {Item as ExplorerItem} from '#components/Explorer/types';
 import {Menu} from '#components/Menu';
 import {View} from '#components/View';
+import {ExplorerRepository} from '#repositories/Explorer';
 import {useEffect, useState} from 'react';
 import {GrCli} from 'react-icons/gr';
-import {ExplorerRepository} from '#repositories/Explorer';
 import style from './style.module.scss';
 
 export const App = () => {
   const [explorer, setExplorer] = useState<ExplorerItem[]>([]);
 
   useEffect(() => {
-    ExplorerRepository.get().then(explorer => setExplorer(explorer))
+    ExplorerRepository.get().then(explorer => setExplorer(explorer));
   }, []);
 
   return (

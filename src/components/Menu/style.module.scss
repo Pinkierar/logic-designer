@@ -1,68 +1,67 @@
 .menu {
-    width: 100%;
-    white-space: nowrap;
-    border-bottom: solid var(--interval-minimum) var(--color-theme-hard);
-    background-color: var(--background);
+  width: 100%;
+  white-space: nowrap;
+  border-bottom: solid var(--interval-minimum) var(--color-theme-hard);
+  background-color: var(--background);
 
-    --background: var(--color-theme-soft);
-    --hovered: var(--color-theme-light);
+  --background: var(--color-theme-soft);
+  --hovered: var(--color-theme-light);
+
+  & > .list {
+    & > .item > .label > svg {
+      display: none;
+    }
+
+    & .list {
+      position: absolute;
+      flex-direction: column;
+      pointer-events: none;
+      opacity: 0;
+      border: solid var(--interval-minimum) var(--hovered);
+
+      & .command,
+      & .label {
+        width: 10em;
+      }
+
+      & .list {
+        top: calc(var(--interval-minimum) * -1);
+        left: 100%;
+      }
+    }
+  }
 }
 
 .list {
-    display: flex;
-    transition: var(--timing-base);
+  display: flex;
+  transition: var(--timing-base);
 }
 
 .item {
-    position: relative;
-    background-color: var(--background);
-    transition: var(--timing-base);
+  position: relative;
+  transition: var(--timing-base);
+  background-color: var(--background);
 
-    &:hover {
-        background-color: var(--hovered);
-        transition-duration: var(--timing-tick);
+  &:hover {
+    transition-duration: var(--timing-tick);
+    background-color: var(--hovered);
 
-        & > .list {
-            opacity: 1;
-            pointer-events: all;
-            z-index: var(--z-index-up);
-            transition-duration: var(--timing-tick);
-        }
+    & > .list {
+      z-index: var(--z-index-up);
+      transition-duration: var(--timing-tick);
+      pointer-events: all;
+      opacity: 1;
     }
+  }
 }
 
 .label {
-    justify-content: space-between;
+  justify-content: space-between;
 }
 
 .command,
 .label {
-    display: flex;
-    padding: var(--interval-small);
-    text-align: left;
-}
-
-
-/* Relative styles */
-
-.menu > .list .list {
-    position: absolute;
-    flex-direction: column;
-    border: solid var(--interval-minimum) var(--hovered);
-    opacity: 0;
-    pointer-events: none;
-}
-
-.menu > .list .list .command,
-.menu > .list .list .label {
-    width: 10em;
-}
-
-.menu > .list > .item > .label > svg {
-    display: none;
-}
-
-.menu > .list .list .list {
-    left: 100%;
-    top: calc(var(--interval-minimum) * -1);
+  display: flex;
+  padding: var(--interval-small);
+  text-align: left;
 }
