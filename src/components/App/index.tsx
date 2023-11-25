@@ -16,7 +16,7 @@ export const App = () => {
 
   return (
     <div className={style.base}>
-      <Menu>
+      <Menu className={style.menu}>
         {[
           {
             label: GrCli,
@@ -67,7 +67,7 @@ export const App = () => {
         ]}
       </Menu>
       <div className={style.content}>
-        <Explorer>
+        <Explorer className={style.explorer}>
           {explorer}
         </Explorer>
         <View className={style.view}></View>

@@ -16,12 +16,21 @@
     background-color: var(--color-theme-dark);
 }
 
+.menu {
+    width: 100%;
+}
+
 .content {
     flex-grow: 1;
     width: 100%;
     display: flex;
 }
 
+.explorer {
+    height: 100%;
+}
+
 .view {
+    height: 100%;
     flex-grow: 1;
 }

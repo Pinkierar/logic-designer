@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import {GrSearch, GrStorage} from 'react-icons/gr';
+import {GrClose, GrSearch, GrStorage} from 'react-icons/gr';
 import {ExplorerItem} from './Item';
 import style from './style.module.scss';
 import {Item} from './types';
@@ -111,10 +111,15 @@ export const Explorer = memo<ExplorerProps>(props => {
               onBlur={searchBlurHandler}
               onInput={searchingHandler}
               value={search}
+              name={'search'}
               ref={inputRef}
             />
             <button onClick={searchClickHandler}>
-              <GrSearch/>
+              {searching ? (
+                <GrClose/>
+              ) : (
+                <GrSearch/>
+              )}
             </button>
           </div>
         )}

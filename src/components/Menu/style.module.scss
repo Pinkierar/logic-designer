@@ -1,5 +1,11 @@
+.command,
+.label {
+  display: flex;
+  padding: var(--interval-small);
+  text-align: left;
+}
+
 .menu {
-  width: 100%;
   white-space: nowrap;
   border-bottom: solid var(--interval-minimum) var(--color-theme-hard);
   background-color: var(--background);
@@ -27,6 +33,11 @@
       & .list {
         top: calc(var(--interval-minimum) * -1);
         left: 100%;
+
+        & .command,
+        & .label {
+          padding: calc(var(--interval-small) - var(--interval-minimum) / 2);
+        }
       }
     }
   }
@@ -57,11 +68,4 @@
 
 .label {
   justify-content: space-between;
-}
-
-.command,
-.label {
-  display: flex;
-  padding: var(--interval-small);
-  text-align: left;
 }

@@ -10,19 +10,11 @@ type ViewProps =
   Omit<HTMLAttributes<HTMLElement>, keyof ViewPropsMin>
   & ViewPropsMin;
 
-export const View = forwardRef<HTMLCanvasElement, ViewProps>((props, ref) => {
+export const View = memo<ViewProps>((props) => {
   const {
     className,
     ...otherProps
   } = props;
-
-  if (ref) {
-    if (typeof ref === 'function') {
-      ref(null)
-    } else {
-      ref.current
-    }
-  }
 
   return (
     <div className={cl(style.view, className)} {...otherProps}>
