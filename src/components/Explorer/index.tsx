@@ -34,6 +34,9 @@ const inline = {
   },
 } as const satisfies { [className: string]: (...args: any[]) => CSSProperties };
 
+const mark = '~~M~~';
+const specialCharacters = ['[', ']', '\\', '^', '$', '.', '|', '?', '*', '+', '(', ')'];
+
 export const Explorer = memo<ExplorerProps>(props => {
   const {
     children,
@@ -50,6 +53,16 @@ export const Explorer = memo<ExplorerProps>(props => {
   const [dragging, setDragging] = useState<boolean>(false);
   const [width, setWidth] = useLocalStorage<number>('explorer-width', 300);
   const [search, setSearch] = useState<string>('');
+  const [escaped, setEscaped] = useState<string>('');
+
+  useEffect(() => {
+    const marked = specialCharacters.reduce((marked, special) => {
+      return marked.replaceAll(special, a1 => `${mark}${a1}`);
+    }, search);
+    const escaped = marked.replaceAll(mark, '\\');
+
+    setEscaped(escaped);
+  }, [search]);
 
   const toggleRolled = useCallback(() => setRolled(rolled => !rolled), []);
 
@@ -139,7 +152,7 @@ export const Explorer = memo<ExplorerProps>(props => {
         {!rolled && (
           <ul className={style.content}>
             {children.map(item => (
-              <ExplorerItem search={search} collapsed={false} key={item.name}>
+              <ExplorerItem search={escaped} collapsed={false} key={item.name}>
                 {item}
               </ExplorerItem>
             ))}

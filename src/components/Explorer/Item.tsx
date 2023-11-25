@@ -31,56 +31,62 @@ export const ExplorerItem = memo<MenuItemProps>(props => {
   };
 
   const searchedName = useMemo(() => {
-    if (!search) return (
+    const NonFound = () => (
       <span>
         {item.name}
       </span>
     );
+
+    if (!search) return <NonFound/>;
 
     const matched = item.name.match(new RegExp(search, 'i'));
 
-    if (!matched || matched.index === undefined) return (
-      <span>
-        {item.name}
-      </span>
-    );
+    if (!matched) return <NonFound/>;
 
-    if (search.length === item.name.length) return (
+    const foundIndex = matched.index;
+    const foundLength = matched[0].length;
+
+    if (foundIndex === void 0) return <NonFound/>;
+
+    const nameLength = item.name.length;
+
+    if (foundLength === nameLength) return (
       <span className={style.searched}>
         {item.name}
       </span>
     );
 
-    if (matched.index === 0) return (
+    if (foundIndex === 0) return (
       <span>
         <span className={style.searched}>
-          {item.name.slice(0, search.length)}
+          {item.name.slice(0, foundLength)}
         </span>
         <span>
-          {item.name.slice(search.length)}
+          {item.name.slice(foundLength)}
         </span>
       </span>
     );
 
-    if (matched.index + search.length === item.name.length) return (
+    const afterIndex = foundIndex + foundLength;
+
+    if (afterIndex === nameLength) return (
       <span>
         <span>
-          {item.name.slice(0, matched.index)}
+          {item.name.slice(0, foundIndex)}
         </span>
         <span className={style.searched}>
-          {item.name.slice(matched.index)}
+          {item.name.slice(foundIndex)}
         </span>
       </span>
     );
 
-    const afterIndex = matched.index + search.length
     return (
       <span>
         <span>
-          {item.name.slice(0, matched.index)}
+          {item.name.slice(0, foundIndex)}
         </span>
         <span className={style.searched}>
-          {item.name.slice(matched.index, afterIndex)}
+          {item.name.slice(foundIndex, afterIndex)}
         </span>
         <span>
           {item.name.slice(afterIndex)}
