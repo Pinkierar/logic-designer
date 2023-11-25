@@ -1,10 +1,11 @@
 import {Explorer} from '#components/Explorer';
 import {Item as ExplorerItem} from '#components/Explorer/types';
 import {Menu} from '#components/Menu';
+import {View} from '#components/View';
 import {useEffect, useState} from 'react';
 import {GrCli} from 'react-icons/gr';
-import {ExplorerRepository} from '../../Repository/Explorer';
-import style from './style.module.css';
+import {ExplorerRepository} from '#repositories/Explorer';
+import style from './style.module.scss';
 
 export const App = () => {
   const [explorer, setExplorer] = useState<ExplorerItem[]>([]);
@@ -14,7 +15,7 @@ export const App = () => {
   }, []);
 
   return (
-    <main className={style.base}>
+    <div className={style.base}>
       <Menu>
         {[
           {
@@ -69,8 +70,8 @@ export const App = () => {
         <Explorer>
           {explorer}
         </Explorer>
-        <div className={style.view}></div>
+        <View className={style.view}></View>
       </div>
-    </main>
+    </div>
   );
 };

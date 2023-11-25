@@ -1,4 +1,8 @@
-type Label = {
+type WithId = {
+  id?: number,
+};
+
+type Label = WithId & {
   name: string,
 }
 

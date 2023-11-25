@@ -1,5 +1,5 @@
-import '#styles/vars.css';
-import '#styles/global.css';
+import '#styles/vars.scss';
+import '#styles/global.scss';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {App} from '#components/App';

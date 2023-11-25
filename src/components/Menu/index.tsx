@@ -1,7 +1,7 @@
 import {cl} from '#utils/cl';
 import {HTMLAttributes, memo} from 'react';
 import {MenuItem} from './Item';
-import style from './style.module.css';
+import style from './style.module.scss';
 import {Item} from './types';
 
 type MenuPropsMin = {

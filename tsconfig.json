@@ -25,6 +25,12 @@
       "#includes/*": [
         "src/includes/*"
       ],
+      "#repositories/*": [
+        "src/repositories/*"
+      ],
+      "#hooks": [
+        "src/hooks/index.ts"
+      ],
       "#utils/*": [
         "src/utils/*"
       ],

@@ -2,7 +2,9 @@ import {Item} from '#components/Explorer/types';
 
 export class ExplorerRepository {
   public static async get(): Promise<Item[]> {
-    return Promise.resolve([
+    await new Promise(r => window.setTimeout(r, 200));
+
+    return [
       {
         name: 'logic-designer',
         content: [
@@ -122,6 +124,18 @@ export class ExplorerRepository {
           },
         ],
       },
-    ])
+    ];
+  }
+
+  public static async add(item: Item): Promise<Item> {
+    return item;
+  }
+
+  public static async delete(id: Item['id']): Promise<void> {
+    return;
+  }
+
+  public static async edit(item: Item): Promise<Item> {
+    return item;
   }
 }

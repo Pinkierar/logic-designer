@@ -1,23 +1,34 @@
 .menu {
+    width: 100%;
+    white-space: nowrap;
+    border-bottom: solid var(--interval-minimum) var(--color-theme-hard);
+    background-color: var(--background);
+
     --background: var(--color-theme-soft);
     --hovered: var(--color-theme-light);
-
-    width: 100%;
-
-    background-color: var(--background);
-    border-bottom: solid var(--interval-minimum) var(--hovered);
-
-    white-space: nowrap;
 }
 
 .list {
     display: flex;
+    transition: var(--timing-base);
 }
 
 .item {
     position: relative;
-
     background-color: var(--background);
+    transition: var(--timing-base);
+
+    &:hover {
+        background-color: var(--hovered);
+        transition-duration: var(--timing-tick);
+
+        & > .list {
+            opacity: 1;
+            pointer-events: all;
+            z-index: var(--z-index-up);
+            transition-duration: var(--timing-tick);
+        }
+    }
 }
 
 .label {
@@ -27,9 +38,7 @@
 .command,
 .label {
     display: flex;
-
     padding: var(--interval-small);
-
     text-align: left;
 }
 
@@ -38,11 +47,8 @@
 
 .menu > .list .list {
     position: absolute;
-
     flex-direction: column;
-
     border: solid var(--interval-minimum) var(--hovered);
-
     opacity: 0;
     pointer-events: none;
 }
@@ -59,31 +65,4 @@
 .menu > .list .list .list {
     left: 100%;
     top: calc(var(--interval-minimum) * -1);
-}
-
-
-/* Hover */
-
-.item:hover {
-    background-color: var(--hovered);
-}
-
-.item:hover > .list {
-    opacity: 1;
-    pointer-events: all;
-
-    z-index: var(--z-index-up);
-}
-
-
-/* Transitions */
-
-.item,
-.list {
-    transition: var(--timing-base);
-}
-
-.item:hover,
-.item:hover > .list {
-    transition-duration: var(--timing-tick);
 }

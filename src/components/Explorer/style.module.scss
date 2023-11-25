@@ -1,0 +1,110 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  height: 100%;
+  background-color: var(--background);
+
+  --background: var(--color-theme-soft);
+  --transition: var();
+}
+
+.tools {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: solid var(--interval-minimum) var(--color-theme-hard);
+}
+
+.accordion {
+  padding: var(--interval-small);
+}
+
+.search {
+  display: flex;
+  flex-grow: 1;
+
+  & > input {
+    flex-grow: 1;
+    border: solid var(--interval-minimum) var(--color-theme-light);
+    background-color: var(--color-theme-hard);
+  }
+
+  & > button {
+    display: flex;
+    padding: var(--interval-small);
+    cursor: text;
+  }
+
+  &:not(.searching) > input {
+    display: none;
+  }
+}
+
+.explorer {
+  position: relative;
+  overflow: auto;
+  flex-grow: 1;
+  max-width: calc(100vw - var(--interval-big));
+
+  & > .content {
+    position: absolute;
+    padding: 0 var(--interval-base);
+  }
+
+  &:not(.dragging) {
+    transition: var(--timing-base);
+  }
+}
+
+.folder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--interval-small);
+
+  & > ul {
+    padding-left: calc(var(--interval-small) + 1em);
+  }
+
+  &:not(.collapsed) > .label > button > svg {
+    transform: rotate(90deg);
+  }
+}
+
+.label {
+  display: flex;
+  gap: var(--interval-small);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--interval-small);
+}
+
+.file {
+  display: flex;
+  padding-left: calc(var(--interval-small) + 1em);
+  gap: var(--interval-small);
+}
+
+.searched {
+  font-weight: bold;
+  color: var(--color-theme-accent-dark);
+  background-color: var(--color-theme-accent-invert);
+}
+
+.collapsed .content {
+  display: none;
+}
+
+.resizeMe {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--interval-small);
+  cursor: e-resize;
+  transform: translateX(100%);
+}
