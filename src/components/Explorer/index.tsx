@@ -1,4 +1,4 @@
-import {useEventListener, useToggle} from '#hooks';
+import {useEventListener, useLocalStorage} from '#hooks';
 import {cl} from '#utils/cl';
 import {
   CSSProperties,
@@ -10,7 +10,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import {Simulate} from 'react-dom/test-utils';
 import {GrSearch, GrStorage} from 'react-icons/gr';
 import {ExplorerItem} from './Item';
 import style from './style.module.scss';
@@ -45,10 +44,12 @@ export const Explorer = memo<ExplorerProps>(props => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [searching, setSearching] = useState<boolean>(false);
-  const [rolled, toggleRolled] = useToggle(false);
+  const [rolled, setRolled] = useLocalStorage<boolean>('explorer-rolled', false);
   const [dragging, setDragging] = useState<boolean>(false);
-  const [width, setWidth] = useState<number>(300);
+  const [width, setWidth] = useLocalStorage<number>('explorer-width', 300);
   const [search, setSearch] = useState<string>('');
+
+  const toggleRolled = useCallback(() => setRolled(rolled => !rolled), []);
 
   const downHandler = useCallback(() => setDragging(true), []);
   const moveHandler = useCallback((event: PointerEvent) => {
