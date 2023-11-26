@@ -1,5 +1,6 @@
 import {canvas, run} from '#app';
 import {App} from '#components/App';
+import '#styles/app.scss';
 import '#styles/global.scss';
 import '#styles/vars.scss';
 import React from 'react';

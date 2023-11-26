@@ -18,13 +18,6 @@ export class CanvasController {
     this.resizeHandler();
   }
 
-  private setSizeStyle(width: number, height: number): void {
-    const {canvas: {style}} = this;
-
-    style.width = `${width}px`;
-    style.height = `${height}px`;
-  }
-
   public resizeHandler(): void {
     const {parent} = this;
 
@@ -37,15 +30,12 @@ export class CanvasController {
     const sizeWidth = width;
     const sizeHeight = height;
 
-    this.setSizeStyle(sizeWidth, sizeHeight);
-    this.setSize(sizeWidth, sizeHeight);
+    this.setSize(sizeWidth * zoom, sizeHeight * zoom);
   }
 
   private static createCanvas(): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
-    const {style} = canvas;
-    style.position = 'absolute';
-    style.top = style.left = style.width = style.height = '0';
+    canvas.className = 'app';
 
     return canvas;
   }
