@@ -7,10 +7,10 @@ export class ExplorerRepository {
     return [
       {
         name: 'logic-designer',
-        content: [
+        children: [
           {
             name: 'public',
-            content: [
+            children: [
               {
                 name: 'favicon.svg',
               },
@@ -18,13 +18,13 @@ export class ExplorerRepository {
           },
           {
             name: 'src',
-            content: [
+            children: [
               {
                 name: 'components',
-                content: [
+                children: [
                   {
                     name: 'App',
-                    content: [
+                    children: [
                       {
                         name: 'style.module.css',
                       },
@@ -35,7 +35,7 @@ export class ExplorerRepository {
                   },
                   {
                     name: 'Explorer',
-                    content: [
+                    children: [
                       {
                         name: 'style.module.css',
                       },
@@ -52,7 +52,7 @@ export class ExplorerRepository {
                   },
                   {
                     name: 'Menu',
-                    content: [
+                    children: [
                       {
                         name: 'style.module.css',
                       },
@@ -71,7 +71,7 @@ export class ExplorerRepository {
               },
               {
                 name: 'styles',
-                content: [
+                children: [
                   {
                     name: 'global.css',
                   },
@@ -82,7 +82,7 @@ export class ExplorerRepository {
               },
               {
                 name: 'types',
-                content: [
+                children: [
                   {
                     name: 'index.d.ts',
                   },
@@ -93,7 +93,7 @@ export class ExplorerRepository {
               },
               {
                 name: 'utils',
-                content: [
+                children: [
                   {
                     name: 'cl.ts',
                   },

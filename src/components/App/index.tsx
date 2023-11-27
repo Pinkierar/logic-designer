@@ -79,9 +79,9 @@ export const App = memo<AppProps>(props => {
         <Explorer onResize={canvasController.resizeHandler} className={style.explorer}>
           {explorer}
         </Explorer>
-        <View className={style.view}>
+        {/*<View className={style.view}>
           {canvasController}
-        </View>
+        </View>*/}
       </div>
     </div>
   );

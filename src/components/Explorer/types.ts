@@ -9,7 +9,7 @@ type Label = WithId & {
 type File = Label & {};
 
 type Folder = Label & {
-  content: Item[],
+  children: Item[],
 };
 
 export type Item = File | Folder;

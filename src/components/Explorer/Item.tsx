@@ -1,5 +1,6 @@
+import {useExplorerContext} from '#components/Explorer/Context';
 import {cl} from '#utils/cl';
-import {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import {memo, useCallback, useEffect, useState} from 'react';
 import {GrDocument, GrFolder, GrFormNext} from 'react-icons/gr';
 
 import style from './style.module.scss';
@@ -16,7 +17,13 @@ export const ExplorerItem = memo<MenuItemProps>(props => {
     collapsed: parentCollapsed,
   } = props;
 
+  const explorerContext = useExplorerContext();
+
   const [collapsed, setCollapsed] = useState<boolean>(parentCollapsed);
+
+  const clickHandler = useCallback(() => {
+    setCollapsed(state => !state);
+  }, []);
 
   useEffect(() => {
     if (!parentCollapsed) return;
@@ -24,13 +31,17 @@ export const ExplorerItem = memo<MenuItemProps>(props => {
     setCollapsed(true);
   }, [parentCollapsed]);
 
-  const clickHandler = useCallback(() => {
-    setCollapsed(state => !state);
-  }, []);
+  useEffect(() => {
+    explorerContext.addSetCollapsed(setCollapsed);
+
+    return () => {
+      explorerContext.removeSetCollapsed(setCollapsed);
+    }
+  }, [explorerContext]);
 
   return (
     <li className={style.item}>
-      {'content' in item ? (
+      {'children' in item ? (
         <div className={cl(style.folder, collapsed && style.collapsed)}>
           <div className={style.label}>
             <button onClick={clickHandler}>
@@ -40,7 +51,7 @@ export const ExplorerItem = memo<MenuItemProps>(props => {
             {item.name}
           </div>
           <ul className={style.content}>
-            {item.content.map(item => (
+            {item.children.map(item => (
               <ExplorerItem collapsed={collapsed} key={item.name}>
                 {item}
               </ExplorerItem>

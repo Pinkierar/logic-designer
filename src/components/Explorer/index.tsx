@@ -1,15 +1,8 @@
-import {useEventListener, useLocalStorage} from '#hooks';
+import {useLocalStorage, useResized} from '#hooks';
 import {cl} from '#utils/cl';
-import {
-  CSSProperties,
-  HTMLAttributes,
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {GrStorage} from 'react-icons/gr';
+import {CSSProperties, HTMLAttributes, memo, useCallback, useEffect, useMemo} from 'react';
+import {GrContract, GrExpand, GrStorage, GrTarget} from 'react-icons/gr';
+import {ExplorerContextProvider, SetCollapsed} from './Context';
 import {ExplorerItem} from './Item';
 import style from './style.module.scss';
 import {Item} from './types';
@@ -24,11 +17,11 @@ type ExplorerProps =
   & ExplorerPropsMin;
 
 const inline = {
-  explorer: (rolled: boolean, width: number) => {
+  width: (width: number) => {
     const limited = Math.max(width, 200);
 
     return {
-      width: rolled ? 0 : limited,
+      width: `calc(${limited}px - var(--interval-micro))`,
     };
   },
 } as const satisfies { [className: string]: (...args: any[]) => CSSProperties };
@@ -41,21 +34,47 @@ export const Explorer = memo<ExplorerProps>(props => {
     ...otherProps
   } = props;
 
-  const documentRef = useRef(document);
-
+  const [widthStore, setWidthStore] = useLocalStorage<number>(
+    'explorer-width',
+    window.innerWidth * 0.2,
+  );
   const [rolled, setRolled] = useLocalStorage<boolean>('explorer-rolled', false);
-  const [dragging, setDragging] = useState<boolean>(false);
-  const [width, setWidth] = useLocalStorage<number>('explorer-width', 300);
 
-  const toggleRolled = useCallback(() => setRolled(rolled => !rolled), []);
+  const [width, dragging, downHandler] = useResized(
+    widthStore,
+    event => event.pageX,
+    value => Math.max(200, Math.min(value, window.innerWidth * 0.9)),
+  );
 
-  const downHandler = useCallback(() => setDragging(true), []);
-  const moveHandler = useCallback((event: PointerEvent) => {
-    if (!dragging) return;
+  const collapsedSetters: Set<SetCollapsed> = useMemo(() => new Set(), [children]);
 
-    setWidth(event.pageX);
-  }, [dragging]);
-  const upHandler = useCallback(() => setDragging(false), []);
+  const setCollapsed = useCallback((collapsed: boolean) => {
+    collapsedSetters.forEach(setCollapsed => setCollapsed(collapsed));
+  }, [collapsedSetters]);
+
+  const addSetCollapsed = useCallback((setter: SetCollapsed) => {
+    collapsedSetters.add(setter);
+  }, [collapsedSetters]);
+
+  const removeSetCollapsed = useCallback((setter: SetCollapsed) => {
+    collapsedSetters.delete(setter);
+  }, [collapsedSetters]);
+
+  const toggleRolled = useCallback(() => {
+    setRolled(rolled => !rolled);
+  }, []);
+
+  const expandHandler = useCallback(() => {
+    setCollapsed(false);
+  }, [setCollapsed]);
+
+  const collapseHandler = useCallback(() => {
+    setCollapsed(true);
+  }, [setCollapsed]);
+
+  useEffect(() => {
+    setWidthStore(width);
+  }, [width]);
 
   useEffect(() => {
     if (!onResize) return;
@@ -63,50 +82,43 @@ export const Explorer = memo<ExplorerProps>(props => {
     onResize();
   }, [width, rolled]);
 
-  const touchMoveHandler = useCallback((event: TouchEvent) => {
-    if (!dragging) return;
-
-    event.preventDefault();
-  }, [dragging]);
-
-  useEventListener(
-    'touchmove',
-    touchMoveHandler,
-    documentRef,
-    {passive: false},
-  );
-  useEventListener('pointermove', moveHandler);
-  useEventListener('pointerup', upHandler);
+  const list = useMemo(() => (
+    <ul className={style.content}>
+      <ExplorerContextProvider value={{addSetCollapsed, removeSetCollapsed}}>
+        {children.map(item => (
+          <ExplorerItem collapsed={true} key={item.name}>
+            {item}
+          </ExplorerItem>
+        ))}
+      </ExplorerContextProvider>
+    </ul>
+  ), [addSetCollapsed, removeSetCollapsed, children])
 
   return (
-    <section className={cl(style.container, className)} {...otherProps}>
-      <div className={style.tools}>
-        <button className={style.accordion} onClick={toggleRolled}>
+    <section className={cl(style.container, rolled && style.rolled, className)} {...otherProps}>
+      <div className={style.header}>
+        <button onClick={toggleRolled}>
           <GrStorage/>
         </button>
-        {!rolled && (
-          <>
-
-          </>
-        )}
+        <div className={style.tools}>
+          <button>
+            <GrTarget/>
+          </button>
+          <button onClick={expandHandler}>
+            <GrExpand/>
+          </button>
+          <button onClick={collapseHandler}>
+            <GrContract/>
+          </button>
+        </div>
       </div>
       <div
         className={cl(style.explorer, dragging && style.dragging)}
-        style={inline.explorer(rolled, width)}
+        style={rolled ? void 0 : inline.width(width)}
       >
-        {!rolled && (
-          <ul className={style.content}>
-            {children.map(item => (
-              <ExplorerItem collapsed={false} key={item.name}>
-                {item}
-              </ExplorerItem>
-            ))}
-          </ul>
-        )}
+        {list}
       </div>
-      {!rolled && (
-        <div className={style.resizeMe} onPointerDown={downHandler}/>
-      )}
+      <div className={style.resizeMe} onPointerDown={downHandler}/>
     </section>
   );
 });
