@@ -2,7 +2,7 @@ import {DirectoryData, DirectoryMinData, DirectoryRepository} from '#repositorie
 import {cl} from '#utils/cl';
 import {HTMLAttributes, memo, useEffect, useMemo, useState} from 'react';
 import {GrFolder, GrFormNext, GrUpdate} from 'react-icons/gr';
-import {useExplorerContext} from './Context';
+import {SetCollapsed, useExplorerContext} from './Context';
 import {File} from './File';
 import style from './style.module.scss';
 
@@ -37,13 +37,16 @@ export const Directory = memo<DirectoryProps>(props => {
     setCollapsed(true);
   }, [parentCollapsed]);
 
+
   useEffect(() => {
+    if (!directory) return;
+
     explorerContext.addSetCollapsed(setCollapsed);
 
     return () => {
       explorerContext.removeSetCollapsed(setCollapsed);
     };
-  }, [explorerContext]);
+  }, [directory, explorerContext]);
 
   const downloadData = async (id: number) => {
     try {
