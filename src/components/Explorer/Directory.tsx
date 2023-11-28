@@ -78,7 +78,7 @@ export const Directory = memo<DirectoryProps>(props => {
       <div className={style.label}>
         <button className={cl(count === 0 && 'hidden')} onClick={clickHandler}>
           {directory || collapsed ? (
-            <GrFormNext/>
+            <GrFormNext className={cl(!directory && 'opacity50')}/>
           ) : (
             <GrUpdate className={style.refresh}/>
           )}
