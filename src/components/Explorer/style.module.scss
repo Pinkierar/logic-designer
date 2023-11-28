@@ -62,6 +62,7 @@
 
 .content {
   display: flex;
+  align-items: flex-start;
   flex-direction: column;
   padding-left: calc(var(--interval-small) + 1em);
   column-gap: var(--column-gap);
@@ -83,9 +84,9 @@
 
 .file {
   display: flex;
-  padding-left: calc(var(--interval-small) + 1em);
+  margin-left: 1em;
+  padding-inline: var(--interval-small);
   column-gap: var(--column-gap);
-  row-gap: var(--row-gap);
 }
 
 .resizeMe {

@@ -58,6 +58,10 @@ const directoriesMin: DirectoryMinData[] = [
     id: 10,
     name: 'utils',
   },
+  {
+    id: 11,
+    name: 'tmp',
+  },
 ];
 
 export const directories: DirectoryData[] = [
@@ -104,6 +108,7 @@ export const directories: DirectoryData[] = [
     directories: [
       directoriesMin[5],
       directoriesMin[6],
+      directoriesMin[11],
       directoriesMin[7],
     ],
   },
@@ -152,6 +157,9 @@ export const directories: DirectoryData[] = [
       files[16],
       files[17],
     ],
+  },
+  {
+    ...directoriesMin[11],
   },
 ];
 
