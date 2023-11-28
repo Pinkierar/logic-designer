@@ -1,45 +1,41 @@
 import {useEventListener} from '#hooks';
-import {useCallback, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
+
+type ResizedHook = [
+  number,
+  boolean,
+  () => void,
+];
 
 export const useResized = (
-  initial: number,
   creator: (event: PointerEvent) => number,
-  limiter: (value: number) => number = value => value,
-): [number, boolean, () => void] => {
+  limiter: (value: number) => number,
+  initial: number,
+): ResizedHook => {
   const [dragging, setDragging] = useState<boolean>(false);
   const [value, setValue] = useState<number>(limiter(initial));
 
-  const downHandler = useCallback(() => {
+  const downHandler = () => {
     setDragging(true);
-  }, []);
+  };
 
-  const moveHandler = useCallback((event: PointerEvent) => {
+  useEventListener('pointermove', event => {
     if (!dragging) return;
 
     setValue(limiter(creator(event)));
-  }, [dragging]);
+  });
 
-  const upHandler = useCallback(() => {
+  useEventListener('pointerup', () => {
     setDragging(false);
-  }, []);
+  });
 
-  const resizeHandler = useCallback(() => {
+  useEventListener('resize', () => {
     setValue(value => limiter(value));
-  }, []);
-
-  const touchMoveHandler = useCallback((event: TouchEvent) => {
-    if (!dragging) return;
-
-    event.preventDefault();
-  }, [dragging]);
-
-  useEventListener('pointermove', moveHandler);
-  useEventListener('pointerup', upHandler);
-  useEventListener('resize', resizeHandler);
+  });
 
   useEventListener(
     'touchmove',
-    touchMoveHandler,
+    event => void (dragging && event.preventDefault()),
     useRef(document),
     {passive: false},
   );

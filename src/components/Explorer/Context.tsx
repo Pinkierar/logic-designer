@@ -9,12 +9,7 @@ type ExplorerContextValue = {
   removeSetCollapsed: SetCollapsedCallback,
 };
 
-const {
-  ContextProvider: ExplorerContextProvider,
-  useContext: useExplorerContext,
-} = new ContextFactory<ExplorerContextValue>();
-
-export {
+export const [
   ExplorerContextProvider,
   useExplorerContext,
-};
+] = ContextFactory.create<ExplorerContextValue>();

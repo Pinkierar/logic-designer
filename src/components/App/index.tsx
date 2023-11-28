@@ -1,27 +1,18 @@
 import {CanvasController} from '#app';
 import {Explorer} from '#components/Explorer';
-import {Item as ExplorerItem} from '#components/Explorer/types';
 import {Menu} from '#components/Menu';
-import {View} from '#components/View';
-import {ExplorerRepository} from '#repositories/Explorer';
-import {memo, useEffect, useState} from 'react';
+import {memo} from 'react';
 import {GrCli} from 'react-icons/gr';
 import style from './style.module.scss';
 
 type AppProps = {
-  children: CanvasController,
+  canvasController: CanvasController,
 };
 
 export const App = memo<AppProps>(props => {
   const {
-    children: canvasController,
+    canvasController,
   } = props;
-
-  const [explorer, setExplorer] = useState<ExplorerItem[]>([]);
-
-  useEffect(() => {
-    ExplorerRepository.get().then(explorer => setExplorer(explorer));
-  }, []);
 
   return (
     <div className={style.base}>
@@ -76,12 +67,8 @@ export const App = memo<AppProps>(props => {
         ]}
       </Menu>
       <div className={style.content}>
-        <Explorer onResize={canvasController.resizeHandler} className={style.explorer}>
-          {explorer}
-        </Explorer>
-        {/*<View className={style.view}>
-          {canvasController}
-        </View>*/}
+        <Explorer onResize={canvasController.resizeHandler} className={style.explorer}/>
+        {/*<View className={style.view} controller={canvasController}/>*/}
       </div>
     </div>
   );

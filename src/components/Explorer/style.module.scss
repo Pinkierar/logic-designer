@@ -10,6 +10,7 @@
   --selected: var(--color-theme-accent-dark);
   --column-gap: var(--interval-small);
   --row-gap: var(--interval-base);
+  --resizer-width: var(--interval-small);
 }
 
 .explorer {
@@ -67,6 +68,19 @@
   row-gap: var(--row-gap);
 }
 
+@keyframes refresh {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.refresh {
+  animation: refresh 2s linear infinite;
+}
+
 .file {
   display: flex;
   padding-left: calc(var(--interval-small) + 1em);
@@ -80,7 +94,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: var(--interval-small);
+  width: var(--resizer-width);
   cursor: e-resize;
   transform: translateX(100%);
 }
