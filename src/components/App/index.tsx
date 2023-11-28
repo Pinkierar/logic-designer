@@ -1,6 +1,7 @@
 import {CanvasController} from '#app';
 import {Explorer} from '#components/Explorer';
 import {Menu} from '#components/Menu';
+import {View} from '#components/View';
 import {memo} from 'react';
 import {GrCli} from 'react-icons/gr';
 import style from './style.module.scss';
@@ -68,7 +69,7 @@ export const App = memo<AppProps>(props => {
       </Menu>
       <div className={style.content}>
         <Explorer onResize={canvasController.resizeHandler} className={style.explorer}/>
-        {/*<View className={style.view} controller={canvasController}/>*/}
+        <View className={style.view} controller={canvasController}/>
       </div>
     </div>
   );

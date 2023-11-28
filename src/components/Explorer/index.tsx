@@ -1,3 +1,4 @@
+import {File} from '#components/Explorer/File';
 import {useLocalStorage, useResized} from '#hooks';
 import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
 import {cl} from '#utils/cl';

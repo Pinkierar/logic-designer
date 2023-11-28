@@ -1,11 +1,19 @@
 import {BoundingBox, Vector2f, Vector4f} from '#graphics';
+import {BEGIN_KIND} from 'p5';
 import {Shape} from './Shape';
 
 export class PolygonShape extends Shape {
   protected vertices: Vector2f[] = [];
+  protected kind: BEGIN_KIND;
 
-  public constructor(vertices: Vector2f[]) {
+  private id: number;
+
+  public constructor(vertices: Vector2f[], kind?: BEGIN_KIND) {
     super();
+
+    this.id=this.p.random(0, 99999)
+
+    this.kind = kind ?? this.p.TESS;
 
     this.setVertices(vertices);
   }
@@ -64,11 +72,14 @@ export class PolygonShape extends Shape {
   public draw(): void {
     const {p} = this;
 
-    p.beginShape(p.TESS);
+    p.push()
+    p.rotate(p.noise(p.millis() / 50000, this.id) * 360)
+    p.beginShape(this.kind);
 
     this.drawVertices();
 
     p.endShape(p.CLOSE);
+    p.pop()
   }
 
   public drawVertices(): void {

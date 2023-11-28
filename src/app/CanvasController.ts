@@ -2,6 +2,7 @@ export class CanvasController {
   public parent: HTMLElement | null = null;
   public readonly canvas: HTMLCanvasElement;
   public setSize?: (width: number, height: number) => void;
+  public resized = () => void 0;
 
   public constructor() {
     this.canvas = CanvasController.createCanvas();
@@ -19,7 +20,7 @@ export class CanvasController {
   }
 
   public resizeHandler(): void {
-    const {parent} = this;
+    const {parent, resized} = this;
 
     if (!parent || !this.setSize) return;
 
@@ -31,6 +32,8 @@ export class CanvasController {
     const sizeHeight = height;
 
     this.setSize(sizeWidth * zoom, sizeHeight * zoom);
+
+    resized();
   }
 
   private static createCanvas(): HTMLCanvasElement {

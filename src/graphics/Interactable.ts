@@ -1,6 +1,6 @@
 import {Entity, Shape, Style} from '#graphics';
 
-export class Interactable<E extends Entity<Shape>, S extends Shape> extends Entity<S> {
+export class Interactable<E extends Entity, S extends Shape> extends Entity<S> {
   private readonly controlled: E;
 
   public constructor(controlled: E, shape: S, style?: Style) {
@@ -14,12 +14,16 @@ export class Interactable<E extends Entity<Shape>, S extends Shape> extends Enti
   }
 
   public override setPosition(x: number, y: number): void {
-    this.controlled.setPosition(x, y);
     super.setPosition(x, y);
   }
 
   public override draw(): void {
+    const {positionX, positionY, controlled} = this;
+
+    controlled.setPosition(positionX, positionY);
+
     this.controlled.draw();
+
     super.draw();
   }
 }
