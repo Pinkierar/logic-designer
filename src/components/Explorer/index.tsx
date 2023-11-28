@@ -2,7 +2,7 @@ import {useLocalStorage, useResized} from '#hooks';
 import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
 import {cl} from '#utils/cl';
 import {CSSProperties, HTMLAttributes, memo, useEffect, useMemo, useState} from 'react';
-import {GrContract, GrExpand, GrStorage, GrTarget} from 'react-icons/gr';
+import {GrContract, GrExpand, GrFolder, GrStorage, GrTarget, GrUpdate} from 'react-icons/gr';
 import {ExplorerContextProvider, SetCollapsed} from './Context';
 import {Directory} from './Directory';
 import style from './style.module.scss';
@@ -50,7 +50,7 @@ export const Explorer = memo<ExplorerProps>(props => {
     WIDTH_INIT,
   );
 
-  const [rootDirectories, setRootDirectories] = useState<DirectoryData[]>([]);
+  const [rootDirectories, setRootDirectories] = useState<DirectoryData[] | null>(null);
   const [rolled, setRolled] = useState<boolean>(savedRolled === 'true');
 
   const [width, dragging, downHandler] = useResized(
@@ -89,14 +89,24 @@ export const Explorer = memo<ExplorerProps>(props => {
 
   const list = useMemo(() => (
     <div className={style.content}>
-      <ExplorerContextProvider value={{
-        addSetCollapsed: collapsedSetters.add.bind(collapsedSetters),
-        removeSetCollapsed: collapsedSetters.delete.bind(collapsedSetters),
-      }}>
-        {rootDirectories.map(rootDirectory => (
-          <Directory key={rootDirectory.id} minData={rootDirectory}/>
-        ))}
-      </ExplorerContextProvider>
+      {rootDirectories ? (
+        <ExplorerContextProvider value={{
+          addSetCollapsed: collapsedSetters.add.bind(collapsedSetters),
+          removeSetCollapsed: collapsedSetters.delete.bind(collapsedSetters),
+        }}>
+          {rootDirectories.map(rootDirectory => (
+            <Directory key={rootDirectory.id} minData={rootDirectory}/>
+          ))}
+        </ExplorerContextProvider>
+      ) : (
+        <div className={style.folder}>
+          <div className={style.label}>
+            <button>
+              <GrUpdate className={style.refresh}/>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   ), [collapsedSetters, rootDirectories]);
 
