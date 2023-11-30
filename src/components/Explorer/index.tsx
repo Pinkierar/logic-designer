@@ -1,9 +1,8 @@
-import {File} from '#components/Explorer/File';
 import {useLocalStorage, useResized} from '#hooks';
 import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
 import {cl} from '#utils/cl';
 import {CSSProperties, HTMLAttributes, memo, useEffect, useMemo, useState} from 'react';
-import {GrContract, GrExpand, GrFolder, GrStorage, GrTarget, GrUpdate} from 'react-icons/gr';
+import {GrContract, GrExpand, GrStorage, GrTarget, GrUpdate} from 'react-icons/gr';
 import {ExplorerContextProvider, SetCollapsed} from './Context';
 import {Directory} from './Directory';
 import style from './style.module.scss';
@@ -135,7 +134,7 @@ export const Explorer = memo<ExplorerProps>(props => {
       >
         {list}
       </div>
-      <div className={style.resizeMe} onPointerDown={downHandler}/>
+      <button className={style.resizeMe} onPointerDown={downHandler}/>
     </section>
   );
 });

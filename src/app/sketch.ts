@@ -1,17 +1,29 @@
 import {CanvasController} from '#app';
-import {Contextual, Entity, Interactable, PolygonShape, Vector2f} from '#graphics';
+import {Contextual, Entity, Interactive, PolygonShape, Vector2f} from '#graphics';
 import P5, {CURSOR_TYPE} from 'p5';
 
 const sketch = (canvasController: CanvasController, p: P5Type) => {
   const {ARROW, DEGREES, HAND, HSL, P2D, ROUND} = p;
 
   p.colorMode(HSL, 360, 100, 100, 1);
-  p.angleMode(DEGREES)
+  p.angleMode(DEGREES);
+
+  let cursor: CURSOR_TYPE = ARROW;
+
+  const onEntityJoin = function (this: Interactive) {
+    this.getControlled().setStyle({strokeWidth: 4, stroke: [0, 50, 100]});
+    cursor = HAND;
+  };
+
+  const onEntityLeave = function (this: Interactive) {
+    this.getControlled().setStyle({});
+    cursor = ARROW;
+  };
 
   const generateEntity = (p: P5Type, i: number, max: number) => {
-    const entityZoom = i / max * 4 + 200 / max;
+    const entityZoom = i / max * 9 + 200 / max + 1;
 
-    const entity = new Interactable(
+    const entity = new Interactive(
       new Entity(
         new PolygonShape(
           [
@@ -39,8 +51,7 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
           fill: [
             p.floor(p.random(0, 100) + 200) % 360,
             30 + (70 * i / max),
-            p.random(40, 80),
-            (i / max) + 0.1,
+            (80 * i / max),
           ],
           stroke: [0, 0, 100, 0.3],
           strokeWidth: entityZoom / 20,
@@ -59,7 +70,17 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
           [-4, 3],
         ].map(v => v.map(a => a * entityZoom) as Vector2f),
       ),
+      {
+        style: {
+          strokeWidth: 1,
+          stroke: [0, 0, 100, 0.3],
+        },
+        zIndex: i + 1,
+      },
     );
+
+    entity.enter = onEntityJoin;
+    entity.leave = onEntityLeave;
 
     return entity;
   };
@@ -84,12 +105,10 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
   p.draw = () => {
     const {width, height, deltaTime, mouseX, mouseY} = p;
 
-    let cursor: CURSOR_TYPE = ARROW;
-
     entities.forEach((entity, i) => {
-      const mult = deltaTime * (i / 100 + 0.1) / 2;
-      const movementX = (p.noise(p.millis() / 10000) - 0.5) * mult;
-      const movementY = (p.noise(p.millis() / 10000, 1000) - 0.5) * mult;
+      const mult = deltaTime * (i / 100 + 0.1) / 200;
+      const movementX = (p.noise(p.millis() / 10000, i * 1000) - 0.5) * mult;
+      const movementY = (p.noise(p.millis() / 10000, i * 1000, 1000) - 0.5) * mult;
 
       entity.move(movementX, movementY);
 
@@ -104,11 +123,7 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
       entity.setPosition(normalizedPositionX, normalizedPositionY);
     });
 
-    entities.forEach(entity => {
-      const hovered = entity.isInside([mouseX, mouseY]);
-      entity.getControlled().setStyle(hovered ? {strokeWidth: 4, stroke: [0, 50, 100]} : {});
-      if (hovered) cursor = HAND;
-    });
+    Interactive.update(mouseX, mouseY);
 
     p.clear(0, 0, 0, 0);
 

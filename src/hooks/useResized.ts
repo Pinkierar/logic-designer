@@ -1,10 +1,15 @@
 import {useEventListener} from '#hooks';
 import {useRef, useState} from 'react';
 
+interface PointerEvent {
+  pageX: number,
+  pageY: number,
+}
+
 type ResizedHook = [
   number,
   boolean,
-  () => void,
+  (event: PointerEvent) => void,
 ];
 
 export const useResized = (
@@ -15,8 +20,10 @@ export const useResized = (
   const [dragging, setDragging] = useState<boolean>(false);
   const [value, setValue] = useState<number>(limiter(initial));
 
-  const downHandler = () => {
+  const downHandler = (event: PointerEvent) => {
     setDragging(true);
+
+    setValue(limiter(creator(event)));
   };
 
   useEventListener('pointermove', event => {
