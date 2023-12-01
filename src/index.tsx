@@ -1,11 +1,12 @@
-import {canvas, run} from '#app';
+import {canvasController, run} from '#app';
 import {App} from '#components/App';
+import '#styles/app.scss';
 import '#styles/global.scss';
 import '#styles/vars.scss';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-run(canvas);
+run(canvasController);
 
 window.addEventListener('load', () => {
   const root = document.getElementById('root');
@@ -13,9 +14,7 @@ window.addEventListener('load', () => {
 
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
-      <App>
-        {canvas}
-      </App>
+      <App canvasController={canvasController}/>
     </React.StrictMode>,
   );
 });

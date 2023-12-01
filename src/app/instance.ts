@@ -1,5 +1,5 @@
 import {CanvasController} from './CanvasController';
 
-export const canvas = new CanvasController();
+export const canvasController = new CanvasController();
 
-window.addEventListener('resize', canvas.resizeHandler);
+window.addEventListener('resize', canvasController.resizeHandler);

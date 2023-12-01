@@ -1,55 +1,99 @@
 import {CanvasController} from '#app';
-import {Contextual, Entity, Interactable, PolygonShape} from '#graphics';
+import {Contextual, Entity, Interactive, PolygonShape, Vector2f} from '#graphics';
 import P5, {CURSOR_TYPE} from 'p5';
 
 const sketch = (canvasController: CanvasController, p: P5Type) => {
-  p.colorMode(p.HSL, 360, 100, 100, 1);
+  const {ARROW, DEGREES, HAND, HSL, P2D, ROUND} = p;
 
-  const entity = new Interactable(
-    new Entity(
+  p.colorMode(HSL, 360, 100, 100, 1);
+  p.angleMode(DEGREES);
+
+  let cursor: CURSOR_TYPE = ARROW;
+
+  const onEntityJoin = function (this: Interactive) {
+    this.getControlled().setStyle({strokeWidth: 4, stroke: [0, 50, 100]});
+    cursor = HAND;
+  };
+
+  const onEntityLeave = function (this: Interactive) {
+    this.getControlled().setStyle({});
+    cursor = ARROW;
+  };
+
+  const generateEntity = (p: P5Type, i: number, max: number) => {
+    const entityZoom = i / max * 9 + 200 / max + 1;
+
+    const entity = new Interactive(
+      new Entity(
+        new PolygonShape(
+          [
+
+            [0, 10],
+
+            [1, 2],
+            [6, 4],
+            [2, 0],
+            [7, -5],
+            [1, -2],
+
+            [0, -10],
+
+            [-1, -2],
+            [-7, -5],
+            [-2, 0],
+            [-6, 4],
+            [-1, 2],
+
+            [0, 10],
+          ].map(v => v.map(a => a * entityZoom) as Vector2f),
+        ),
+        {
+          fill: [
+            p.floor(p.random(0, 100) + 200) % 360,
+            30 + (70 * i / max),
+            (80 * i / max),
+          ],
+          stroke: [0, 0, 100, 0.3],
+          strokeWidth: entityZoom / 20,
+        },
+      ),
       new PolygonShape(
         [
-          [-170, 0],
+          [0, 8],
 
-          [-200, -100],
-          [-150, -50],
-          [-120, -80],
-          [-110, -50],
-          [0, -50],
-          [-20, -30],
+          [4, 3],
+          [5, -3],
 
-          [200, 0],
+          [0, -8],
 
-          [-20, 30],
-          [0, 50],
-          [-110, 50],
-          [-120, 80],
-          [-150, 50],
-          [-200, 100],
-        ].map(([x, y]) => [x * 2, y * 2]),
+          [-5, -3],
+          [-4, 3],
+        ].map(v => v.map(a => a * entityZoom) as Vector2f),
       ),
       {
-        fill: [0, 72, 41],
-        stroke: [0, 62, 65],
-        strokeWidth: 2,
+        style: {
+          strokeWidth: 1,
+          stroke: [0, 0, 100, 0.3],
+        },
+        zIndex: i + 1,
       },
-    ),
-    new PolygonShape(
-      [
-        [-200, -100],
-        [200, 0],
-        [-200, 100],
-      ].map(([x, y]) => [x * 1.9, y * 1.7]),
-    ),
-    {
-      stroke: [0, 100, 100, 0.1],
-      strokeWidth: 1,
-    },
+    );
+
+    entity.enter = onEntityJoin;
+    entity.leave = onEntityLeave;
+
+    return entity;
+  };
+
+  const entitiesCount = 400;
+  const entities = Array.from(
+    {length: entitiesCount},
+    (_, i) => generateEntity(p, i, entitiesCount),
   );
 
   p.setup = () => {
-    p.createCanvas(1, 1, p.P2D, canvasController.canvas);
-    p.strokeJoin(p.ROUND);
+    p.createCanvas(1, 1, P2D, canvasController.canvas);
+    p.strokeJoin(ROUND);
 
     const context = canvasController.canvas.getContext('2d');
     if (!context) throw new Error('non 2d context');
@@ -59,27 +103,46 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
   };
 
   p.draw = () => {
-    let cursor: CURSOR_TYPE = p.ARROW;
+    const {width, height, deltaTime, mouseX, mouseY} = p;
 
-    const centerX = p.width / 2;
-    const centerY = p.height / 2;
+    entities.forEach((entity, i) => {
+      const mult = deltaTime * (i / 100 + 0.1) / 200;
+      const movementX = (p.noise(p.millis() / 10000, i * 1000) - 0.5) * mult;
+      const movementY = (p.noise(p.millis() / 10000, i * 1000, 1000) - 0.5) * mult;
 
-    const value = p.millis() / 1300;
+      entity.move(movementX, movementY);
 
-    entity.setPosition(
-      centerX + p.sin(value) * 2 * 50,
-      centerY + p.cos(value * 3) * 50,
-    );
+      const [positionX, positionY] = entity.getPosition();
 
-    const hovered = entity.isInside([p.mouseX, p.mouseY]);
-    entity.getControlled().setStyle(hovered ? {stroke: [0, 50, 100]} : {});
-    if (hovered) cursor = p.HAND;
+      let normalizedPositionX = positionX;
+      let normalizedPositionY = positionY;
+      if (positionX < -width) normalizedPositionX = width * 2;
+      if (positionY < -height) normalizedPositionY = height * 2;
+      if (positionX > width * 2) normalizedPositionX = -width;
+      if (positionY > height * 2) normalizedPositionY = -height;
+      entity.setPosition(normalizedPositionX, normalizedPositionY);
+    });
+
+    Interactive.update(mouseX, mouseY);
 
     p.clear(0, 0, 0, 0);
 
-    entity.draw();
+    entities.forEach(entity => {
+      entity.draw();
+    });
 
     p.cursor(cursor);
+  };
+
+  canvasController.resized = () => {
+    const {width, height} = p;
+
+    entities.forEach(entity => {
+      entity.setPosition(
+        p.random(-width, width * 2),
+        p.random(-height, height * 2),
+      );
+    });
   };
 };
 

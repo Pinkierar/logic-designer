@@ -4,7 +4,8 @@ import {HTMLAttributes, memo, useEffect, useRef} from 'react';
 import style from './style.module.scss';
 
 type ViewPropsMin = {
-  children: CanvasController,
+  children?: never,
+  controller: CanvasController,
 };
 
 type ViewProps =
@@ -14,7 +15,7 @@ type ViewProps =
 export const View = memo<ViewProps>((props) => {
   const {
     className,
-    children: canvasController,
+    controller: controller,
     ...otherProps
   } = props;
 
@@ -25,8 +26,8 @@ export const View = memo<ViewProps>((props) => {
 
     const container = ref.current;
 
-    container.appendChild(canvasController.canvas);
-    canvasController.setParent(container);
+    container.appendChild(controller.canvas);
+    controller.setParent(container);
   }, [ref.current]);
 
   return (

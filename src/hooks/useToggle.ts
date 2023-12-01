@@ -1,11 +1,13 @@
-// Source: https://usehooks-ts.com/react-hook/use-toggle
-
 import {Dispatch, SetStateAction, useCallback, useState} from 'react';
 
-export function useToggle(
-  defaultValue?: boolean,
-): [boolean, () => void, Dispatch<SetStateAction<boolean>>] {
-  const [value, setValue] = useState(!!defaultValue);
+type ToggleHook = [
+  boolean,
+  () => void,
+  Dispatch<SetStateAction<boolean>>,
+];
+
+export function useToggle(initial?: any): ToggleHook {
+  const [value, setValue] = useState(Boolean(initial));
 
   const toggle = useCallback(() => setValue(x => !x), []);
 

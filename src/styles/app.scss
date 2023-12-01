@@ -1,0 +1,16 @@
+.app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.opacity50 {
+  opacity: 0.5;
+}

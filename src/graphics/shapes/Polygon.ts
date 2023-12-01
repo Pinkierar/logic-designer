@@ -1,28 +1,24 @@
 import {BoundingBox, Vector2f, Vector4f} from '#graphics';
+import {BEGIN_KIND} from 'p5';
 import {Shape} from './Shape';
 
 export class PolygonShape extends Shape {
   protected vertices: Vector2f[] = [];
+  protected kind: BEGIN_KIND;
 
-  public constructor(vertices: Vector2f[]) {
+  private id: number;
+
+  public constructor(vertices: Vector2f[], kind?: BEGIN_KIND) {
     super();
 
-    this.setVertices(vertices);
-  }
+    this.id = this.p.random(0, 99999);
 
-  public setVertices(vertices: Vector2f[]): void {
+    this.kind = kind ?? this.p.TESS;
+
     if (vertices.length < 3)
       throw new Error('The polygon must contain at least three vertices');
 
     this.vertices = vertices;
-  }
-
-  // public getVertex(index: number): Vector2f | undefined {
-  //   return this.vertices[index];
-  // }
-
-  public getVertices(): Vector2f[] {
-    return this.vertices;
   }
 
   public toBoundingBox(): BoundingBox {
@@ -64,7 +60,7 @@ export class PolygonShape extends Shape {
   public draw(): void {
     const {p} = this;
 
-    p.beginShape(p.TESS);
+    p.beginShape(this.kind);
 
     this.drawVertices();
 

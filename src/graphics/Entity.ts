@@ -45,18 +45,18 @@ export class Entity<S extends Shape = Shape> extends Drawable {
     this.positionY += y;
   }
 
-  public isInside(point: Vector2f): boolean {
-    const local = this.toLocal(point);
+  public isInside(x: number, y: number): boolean {
+    const local = this.toLocal(x, y);
 
     return this.shape.isInside(local);
   }
 
-  public toLocal(point: Vector2f): Vector2f {
+  public toLocal(x: number, y: number): Vector2f {
     const {positionX, positionY} = this;
 
     return [
-      point[0] - positionX,
-      point[1] - positionY,
+      x - positionX,
+      y - positionY,
     ];
   }
 
