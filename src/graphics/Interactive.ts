@@ -7,7 +7,7 @@ type InteractableOptions = {
 
 export class Interactive<E extends Entity = Entity, S extends Shape = Shape> extends Entity<S> {
   private static interactives: Interactive[] = [];
-  private static currentInsideZIndex: number = 0;
+  private static currentInsideZIndex: number = -Infinity;
 
   private zIndex!: number;
   private readonly controlled: E;
@@ -72,7 +72,7 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
 
     super.draw();
 
-    Interactive.currentInsideZIndex = 0;
+    Interactive.currentInsideZIndex = -Infinity;
   }
 
   //

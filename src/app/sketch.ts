@@ -21,7 +21,7 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
   };
 
   const generateEntity = (p: P5Type, i: number, max: number) => {
-    const entityZoom = i / max * 9 + 200 / max + 1;
+    const entityZoom = 3 + i / max * 5 + p.random(0, 3);
 
     const entity = new Interactive(
       new Entity(
@@ -71,11 +71,7 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
         ].map(v => v.map(a => a * entityZoom) as Vector2f),
       ),
       {
-        style: {
-          strokeWidth: 1,
-          stroke: [0, 0, 100, 0.3],
-        },
-        zIndex: i + 1,
+        zIndex: i,
       },
     );
 
@@ -107,8 +103,10 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
 
     entities.forEach((entity, i) => {
       const mult = deltaTime * (i / 100 + 0.1) / 200;
-      const movementX = (p.noise(p.millis() / 10000, i * 1000) - 0.5) * mult;
-      const movementY = (p.noise(p.millis() / 10000, i * 1000, 1000) - 0.5) * mult;
+      const y = i * 1000;
+      const t = p.millis() / 5000;
+      const movementX = (p.noise(0, y, t) - 0.5) * mult;
+      const movementY = (p.noise(10000, y, t) - 0.5) * mult;
 
       entity.move(movementX, movementY);
 
