@@ -1,7 +1,6 @@
-import {Entity, Shape, Style} from '#graphics';
+import {Entity, EntityOptions, Shape} from '#graphics';
 
-type InteractableOptions = {
-  style?: Style,
+type InteractableOptions = EntityOptions & {
   zIndex?: number,
 };
 
@@ -18,7 +17,7 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
   public leave: () => void = () => void 0;
 
   public constructor(controlled: E, shape: S, options?: InteractableOptions) {
-    super(shape, options?.style);
+    super(shape, options);
     Interactive.interactives.push(this);
 
     this.setZIndex(options?.zIndex ?? 1);
@@ -64,15 +63,26 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
   }
 
   public override draw(): void {
-    const {positionX, positionY, controlled} = this;
+    const {p, positionX: iPositionX, positionY: iPositionY, controlled} = this;
+    const {width, height} = p;
+    const [cPositionX, cPositionY] = controlled.getPosition();
+    const offsetX = iPositionX - cPositionX;
+    const offsetY = iPositionY - cPositionY;
+    const interpolated = p.abs(offsetX) < width / 2 && p.abs(offsetY) < height / 2;
 
-    controlled.setPosition(positionX, positionY);
+    controlled.getShape().setRotation(p.max(-60, p.min(offsetX / 3, 60)));
+    controlled.setPosition(
+      interpolated ? cPositionX + offsetX / 5 : iPositionX,
+      interpolated ? cPositionY + offsetY / 5 : iPositionY,
+    );
 
-    this.controlled.draw();
-
-    super.draw();
+    controlled.draw();
 
     Interactive.currentInsideZIndex = -Infinity;
+  }
+
+  public drawBoundingEntity(): void {
+    super.draw();
   }
 
   //
