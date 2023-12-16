@@ -1,33 +1,38 @@
-import {cl} from '#utils/cl';
-import {HTMLAttributes, memo} from 'react';
-import {MenuItem} from './Item';
+import {classNames} from '#utils/classNames';
+import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
+import {memo} from 'react';
+import {Item, MenuItem} from './Item';
 import style from './style.module.scss';
-import {Item} from './types';
 
-type MenuPropsMin = {
-  children: Item[],
-};
-
-type MenuProps =
-  Omit<HTMLAttributes<HTMLElement>, keyof MenuPropsMin>
-  & MenuPropsMin;
+type MenuProps = OmitChildren<IncludeHTMLProps<{
+  items: Item[],
+}>>;
 
 export const Menu = memo<MenuProps>(props => {
   const {
-    children,
+    items,
     className,
     ...otherProps
   } = props;
 
   return (
-    <section className={cl(style.menu, className)} {...otherProps}>
-      <ul className={style.list}>
-        {children.map((item, index) => (
-          <MenuItem key={index}>
-            {item}
-          </MenuItem>
-        ))}
-      </ul>
-    </section>
+    <ul className={classNames(className, style.list, style.menu)} {...otherProps}>
+      {items.map((item, index) => (
+        <MenuItem key={index}>
+          {item}
+        </MenuItem>
+      ))}
+    </ul>
+  );
+});
+
+export const MenuHeader = memo<MenuProps>(props => {
+  const {
+    className,
+    ...otherProps
+  } = props;
+
+  return (
+    <Menu className={classNames(className, style.header)} {...otherProps}/>
   );
 });

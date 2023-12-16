@@ -1,8 +1,9 @@
-import {cl} from '#utils/cl';
-import {HTMLAttributes, memo} from 'react';
+import {classNames} from '#utils/classNames';
+import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
+import {memo} from 'react';
 import style from './style.module.scss';
 
-type FlexSeparatorProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'>;
+type FlexSeparatorProps = OmitChildren<IncludeHTMLProps<{}, HTMLDivElement>>;
 
 export const FlexSeparator = memo<FlexSeparatorProps>(props => {
   const {
@@ -11,6 +12,6 @@ export const FlexSeparator = memo<FlexSeparatorProps>(props => {
   } = props;
 
   return (
-    <div className={cl(style.separator, className)} {...otherProps}/>
+    <div className={classNames(className, style.separator)} {...otherProps}/>
   );
 });

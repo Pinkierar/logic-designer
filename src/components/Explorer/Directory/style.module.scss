@@ -1,0 +1,12 @@
+.directory:not(.collapsed) > .header .arrow {
+  transform: rotate(90deg);
+}
+
+.content {
+  align-items: flex-start;
+  padding-left: calc(var(--interval-small) + 1em);
+}
+
+.collapsed > .content {
+  display: none;
+}

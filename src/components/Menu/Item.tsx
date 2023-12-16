@@ -1,8 +1,12 @@
 import {memo} from 'react';
+import type {IconType} from 'react-icons';
 import {GrFormNext} from 'react-icons/gr';
-
 import style from './style.module.scss';
-import {Item} from './types';
+
+type Label = { label: string | IconType };
+type Command = Label & { command: () => void };
+type Container = Label & { list: Item[] };
+export type Item = Command | Container;
 
 type MenuItemProps = {
   children: Item,
@@ -14,7 +18,7 @@ export const MenuItem = memo<MenuItemProps>(props => {
   } = props;
 
   const {
-    label: Label
+    label: Label,
   } = children;
 
   return (
@@ -22,10 +26,8 @@ export const MenuItem = memo<MenuItemProps>(props => {
       {'list' in children ? (
         <>
           <div className={style.label}>
-            <span>
-              {typeof Label === 'string' ? Label : <Label/>}
-            </span>
-            <GrFormNext/>
+            {typeof Label === 'string' ? Label : <Label/>}
+            <GrFormNext className={style.next}/>
           </div>
           <ul className={style.list}>
             {children.list.map((item, index) => (
@@ -36,7 +38,7 @@ export const MenuItem = memo<MenuItemProps>(props => {
           </ul>
         </>
       ) : (
-        <button className={style.command} onClick={children.command}>
+        <button className={style.label} onClick={children.command}>
           {typeof Label === 'string' ? Label : <Label/>}
         </button>
       )}

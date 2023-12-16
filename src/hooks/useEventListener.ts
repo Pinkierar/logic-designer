@@ -1,4 +1,4 @@
-// Source: https://usehooks-ts.com/react-hook/use-event-listener
+// Extends: https://usehooks-ts.com/react-hook/use-event-listener
 
 import {RefObject, useEffect, useLayoutEffect, useRef} from 'react';
 
@@ -13,6 +13,13 @@ export function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
   handler: (event: WindowEventMap[K]) => void,
   element?: undefined,
+  options?: boolean | AddEventListenerOptions,
+): void
+
+export function useEventListener<K extends keyof WindowEventMap>(
+  eventName: K,
+  handler: (event: WindowEventMap[K]) => void,
+  element: Document,
   options?: boolean | AddEventListenerOptions,
 ): void
 
@@ -47,7 +54,7 @@ export function useEventListener<
       | MediaQueryListEventMap[KM]
       | Event,
   ) => void,
-  element?: RefObject<T>,
+  element?: RefObject<T> | Document,
   options?: boolean | AddEventListenerOptions,
 ) {
   const savedHandler = useRef(handler);
@@ -57,7 +64,9 @@ export function useEventListener<
   }, [handler]);
 
   useEffect(() => {
-    const targetElement: T | Window = element?.current ?? window;
+    const targetElement: T | Window | Document | null = element
+      ? ('current' in element ? element.current : element)
+      : window;
 
     if (!(targetElement && targetElement.addEventListener)) return;
 

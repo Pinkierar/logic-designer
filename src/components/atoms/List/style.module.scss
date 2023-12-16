@@ -1,0 +1,11 @@
+.list {
+  display: flex;
+  gap: var(--list-row-gap) var(--list-column-gap);
+
+  --list-column-gap: var(--column-gap, --interval-small);
+  --list-row-gap: var(--row-gap, --list-column-gap);
+}
+
+.vertical {
+  flex-direction: column;
+}
