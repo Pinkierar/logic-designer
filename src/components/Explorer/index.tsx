@@ -91,7 +91,7 @@ export const Explorer = memo<ExplorerProps>(props => {
         <button onClick={toggleRolled}>
           <GrStorage/>
         </button>
-        <List gap={0}>
+        <List gap={0} className={style.tools}>
           <button>
             <GrTarget/>
           </button>
