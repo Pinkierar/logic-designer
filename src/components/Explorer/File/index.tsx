@@ -18,7 +18,7 @@ export const File = memo<FileProps>(props => {
   const {showMenu} = useExplorerContext();
 
   const contextMenuProps = useCustomContextMenu(
-    () => showMenu('file', minData),
+    event => showMenu(event, {type: 'file', data: minData}),
   );
 
   const openHandler = () => {

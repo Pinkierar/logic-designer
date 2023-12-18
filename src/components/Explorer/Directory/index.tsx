@@ -19,10 +19,14 @@ export const Directory = memo<DirectoryProps>(props => {
     collapsed: parentCollapsed = false,
   } = props;
 
-  const context = useExplorerContext();
+  const {
+    addSetCollapsed,
+    removeSetCollapsed,
+    showMenu,
+  } = useExplorerContext();
 
   const contextMenuProps = useCustomContextMenu(
-    () => context.showMenu('directory', minData),
+    event => showMenu(event, {type: 'directory', data: minData}),
   );
 
   const [collapsed, toggleCollapsed, setCollapsed] = useToggle(true);
@@ -44,12 +48,12 @@ export const Directory = memo<DirectoryProps>(props => {
   useEffect(() => {
     if (!directory) return;
 
-    context.addSetCollapsed(setCollapsed);
+    addSetCollapsed(setCollapsed);
 
     return () => {
-      context.removeSetCollapsed(setCollapsed);
+      removeSetCollapsed(setCollapsed);
     };
-  }, [directory, context]);
+  }, [directory, addSetCollapsed, removeSetCollapsed]);
 
   useEffect(() => {
     if (directory || collapsed) return;

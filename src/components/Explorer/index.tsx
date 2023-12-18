@@ -1,13 +1,13 @@
 import {List} from '#components/atoms';
-import {useLocalStorage, useResized, useToggle} from '#hooks';
-import {DirectoryData, DirectoryMinData, DirectoryRepository} from '#repositories/Directory';
-import {FileMinData} from '#repositories/File';
+import {Menu} from '#components/Menu';
+import {useClickOutside, useEventListener, useLocalStorage, useResized, useToggle} from '#hooks';
+import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
 import {classNames} from '#utils/classNames';
 import type {InlineStyle} from '#utils/InlineStyle';
 import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
-import {Dispatch, memo, SetStateAction, useEffect, useMemo, useState} from 'react';
+import {Dispatch, memo, SetStateAction, useEffect, useMemo, useRef, useState} from 'react';
 import {GrContract, GrExpand, GrStorage, GrTarget, GrUpdate} from 'react-icons/gr';
-import {ExplorerContextProvider} from './Context';
+import {ExplorerContextProvider, MenuOptions} from './Context';
 import {Directory} from './Directory';
 import style from './style.module.scss';
 
@@ -25,11 +25,23 @@ const inline = {
       width: `calc(${limited}px - var(--resizer-width) / 2)`,
     };
   },
+  menu: (pageX: number, pageY: number) => {
+    return {
+      left: `${pageX}px`,
+      top: `${pageY}px`,
+    };
+  },
 } satisfies InlineStyle;
 
 type ExplorerProps = OmitChildren<IncludeHTMLProps<{
   onResize?: () => void,
 }>>;
+
+type MenuState = {
+  pageX: number,
+  pageY: number,
+  visible: boolean,
+};
 
 export const Explorer = memo<ExplorerProps>(props => {
   const {
@@ -37,6 +49,8 @@ export const Explorer = memo<ExplorerProps>(props => {
     onResize,
     ...otherProps
   } = props;
+
+  const menuRef = useRef<HTMLUListElement>(null);
 
   const savedRolled = useLocalStorage(ROLLED_KEY, () => rolled, ROLLED_INIT);
   const savedWidth = useLocalStorage(WIDTH_KEY, () => width, WIDTH_INIT);
@@ -62,11 +76,20 @@ export const Explorer = memo<ExplorerProps>(props => {
     });
   };
 
+  const [menu, setMenu] = useState<MenuState>({pageX: 0, pageY: 0, visible: false});
+
   const showMenu = (
-    type: 'file' | 'directory',
-    minData: FileMinData | DirectoryMinData,
+    {pageX, pageY}: MouseEvent,
+    {type, data: minData}: MenuOptions,
   ) => {
+    setMenu({pageX, pageY, visible: true});
     console.log('showMenu', type, minData);
+  };
+
+  const hideMenu = () => {
+    if (!menu.visible) return;
+
+    setMenu(menu => ({...menu, visible: false}));
   };
 
   useEffect(() => {
@@ -80,6 +103,13 @@ export const Explorer = memo<ExplorerProps>(props => {
 
     onResize();
   }, [width, rolled]);
+
+  useClickOutside(menuRef, hideMenu);
+  useEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+
+    hideMenu();
+  });
 
   return (
     <List
@@ -126,6 +156,43 @@ export const Explorer = memo<ExplorerProps>(props => {
         </List>
       </div>
       <button className={style.resizeMe} onPointerDown={downHandler}/>
+      <Menu
+        className={classNames(style.menu, menu.visible && style.visible)}
+        style={inline.menu(menu.pageX, menu.pageY)}
+        items={[
+          {
+            label: 'Добавить',
+            list: [
+              {
+                label: 'Файл',
+                command: () => {
+                },
+              },
+              {
+                label: 'Папку',
+                command: () => {
+                },
+              },
+            ],
+          },
+          {
+            label: 'Удалить',
+            command: () => {
+            },
+          },
+          {
+            label: 'Переименовать',
+            command: () => {
+            },
+          },
+          {
+            label: 'Обновить',
+            command: () => {
+            },
+          },
+        ]}
+        ref={menuRef}
+      />
     </List>
   );
 });

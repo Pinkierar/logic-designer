@@ -1,9 +1,11 @@
 import {HTMLAttributes, useRef} from 'react';
 import {useEventListener} from './useEventListener';
 
-type CustomContextMenuHook = Pick<HTMLAttributes<HTMLElement>, 'onPointerDown' | 'onPointerUp'>
+type CustomContextMenuHook = Pick<HTMLAttributes<HTMLElement>, 'onPointerDown' | 'onPointerUp'>;
 
-export const useCustomContextMenu = (showMenu: () => void): CustomContextMenuHook => {
+export const useCustomContextMenu = (
+  show: (event: MouseEvent) => void,
+): CustomContextMenuHook => {
   const stateRef = useRef({
     isDownAbove: false,
     isUpAbove: false,
@@ -35,7 +37,7 @@ export const useCustomContextMenu = (showMenu: () => void): CustomContextMenuHoo
 
     event.preventDefault();
 
-    showMenu();
+    show(event);
   }, document);
 
   return {
