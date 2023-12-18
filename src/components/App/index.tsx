@@ -1,76 +1,105 @@
-import {CanvasController} from '#app';
+import {canvasController} from '#app';
+import {List} from '#components/atoms';
+import {Dialog, DialogContextProvider, DialogCurrent} from '#components/Dialog';
 import {Explorer} from '#components/Explorer';
-import {Menu} from '#components/Menu';
+import {MenuHeader} from '#components/Menu';
+import {MenuItem} from '#components/Menu/Item';
 import {View} from '#components/View';
-import {memo} from 'react';
+import {memo, useState} from 'react';
 import {GrCli} from 'react-icons/gr';
 import style from './style.module.scss';
 
-type AppProps = {
-  canvasController: CanvasController,
+const menuItems: MenuItem[] = [
+  {
+    label: GrCli,
+    command: 'logo',
+  },
+  {
+    label: 'Файл',
+    items: [
+      {
+        label: 'Новый',
+        items: [
+          {
+            label: 'Проект',
+            command: 'project new',
+          },
+        ],
+      },
+      {
+        label: 'Открыть...',
+        command: 'open',
+      },
+      {
+        label: 'Сохранить как',
+        command: 'save as',
+      },
+      {
+        label: 'Закрыть проект',
+        command: 'project close',
+      },
+    ],
+  },
+  {
+    label: 'Помощь',
+    items: [
+      {
+        label: 'О программе',
+        command: 'about',
+      },
+    ],
+  },
+];
+
+const menuCallback = (command: string) => {
+  if (command === 'project new') {
+    alert('Pinkierar');
+  } else if (command === 'open') {
+
+  } else if (command === 'save as') {
+
+  } else if (command === 'project close') {
+
+  } else if (command === 'about') {
+
+  }
+
+  throw new Error(`unknown command "${command}"`);
 };
 
-export const App = memo<AppProps>(props => {
-  const {
-    canvasController,
-  } = props;
+export const App = memo(() => {
+  const [dialog, setDialog] = useState<DialogCurrent>(null);
 
   return (
-    <div className={style.base}>
-      <Menu className={style.menu}>
-        {[
-          {
-            label: GrCli,
-            command: () => {
-              alert('Pinkierar');
-            },
-          },
-          {
-            label: 'Файл',
-            list: [
-              {
-                label: 'Новый',
-                list: [
-                  {
-                    label: 'Проект',
-                    command: () => {
-                    },
-                  },
-                ],
-              },
-              {
-                label: 'Открыть...',
-                command: () => {
-                },
-              },
-              {
-                label: 'Сохранить как',
-                command: () => {
-                },
-              },
-              {
-                label: 'Закрыть проект',
-                command: () => {
-                },
-              },
-            ],
-          },
-          {
-            label: 'Помощь',
-            list: [
-              {
-                label: 'О программе',
-                command: () => {
-                },
-              },
-            ],
-          },
-        ]}
-      </Menu>
-      <div className={style.content}>
-        <Explorer onResize={canvasController.resizeHandler} className={style.explorer}/>
-        <View className={style.view} controller={canvasController}/>
-      </div>
-    </div>
+    <DialogContextProvider value={{
+      alert: (title, message) => setDialog({
+        mode: 'alert',
+        title,
+        message,
+      }),
+      confirm: (title, message, callback) => setDialog({
+        mode: 'confirm',
+        title,
+        message,
+        callback,
+      }),
+      prompt: (title, message, callback, initial = '') => setDialog({
+        mode: 'prompt',
+        title,
+        message,
+        callback,
+        initial,
+      }),
+      hide: () => setDialog(null),
+    }}>
+      <List gap={0} vertical={true} className={style.base}>
+        <MenuHeader className={style.menu} items={menuItems} callback={menuCallback}/>
+        <List gap={0} className={style.content}>
+          <Explorer onResize={canvasController.resizeHandler} className={style.explorer}/>
+          <View className={style.view} controller={canvasController}/>
+        </List>
+        <Dialog current={dialog}/>
+      </List>
+    </DialogContextProvider>
   );
 });

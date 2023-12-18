@@ -39,6 +39,9 @@
       ],
       "#styles/*": [
         "src/styles/*"
+      ],
+      "#store": [
+        "src/store/index.ts"
       ]
     }
   },

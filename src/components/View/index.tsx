@@ -1,21 +1,17 @@
 import {CanvasController} from '#app';
-import {cl} from '#utils/cl';
-import {HTMLAttributes, memo, useEffect, useRef} from 'react';
+import {classNames} from '#utils/classNames';
+import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
+import {memo, useEffect, useRef} from 'react';
 import style from './style.module.scss';
 
-type ViewPropsMin = {
-  children?: never,
+type ViewProps = OmitChildren<IncludeHTMLProps<{
   controller: CanvasController,
-};
+}>>;
 
-type ViewProps =
-  Omit<HTMLAttributes<HTMLElement>, keyof ViewPropsMin>
-  & ViewPropsMin;
-
-export const View = memo<ViewProps>((props) => {
+export const View = memo<ViewProps>(props => {
   const {
     className,
-    controller: controller,
+    controller,
     ...otherProps
   } = props;
 
@@ -31,6 +27,6 @@ export const View = memo<ViewProps>((props) => {
   }, [ref.current]);
 
   return (
-    <div className={cl(style.view, className)} {...otherProps} ref={ref}/>
+    <div className={classNames(style.view, className)} {...otherProps} ref={ref}/>
   );
 });

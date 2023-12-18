@@ -1,42 +1,47 @@
 import {memo} from 'react';
+import type {IconType} from 'react-icons';
 import {GrFormNext} from 'react-icons/gr';
-
 import style from './style.module.scss';
-import {Item} from './types';
+
+type Label = { label: string | IconType };
+type Command = Label & { command: string };
+type Container = Label & { items: MenuItem[] };
+export type MenuItem = Command | Container;
 
 type MenuItemProps = {
-  children: Item,
+  item: MenuItem,
+  callback?: (command: string) => void,
 };
 
-export const MenuItem = memo<MenuItemProps>(props => {
+export const MenuChild = memo<MenuItemProps>(props => {
   const {
-    children,
+    item,
+    callback,
   } = props;
 
   const {
-    label: Label
-  } = children;
+    label: Label,
+  } = item;
 
   return (
     <li className={style.item}>
-      {'list' in children ? (
+      {'items' in item ? (
         <>
           <div className={style.label}>
-            <span>
-              {typeof Label === 'string' ? Label : <Label/>}
-            </span>
-            <GrFormNext/>
+            {typeof Label === 'string' ? Label : <Label/>}
+            <GrFormNext className={style.next}/>
           </div>
           <ul className={style.list}>
-            {children.list.map((item, index) => (
-              <MenuItem key={index}>
-                {item}
-              </MenuItem>
+            {item.items.map((item, index) => (
+              <MenuChild key={index} item={item} callback={callback}/>
             ))}
           </ul>
         </>
       ) : (
-        <button className={style.command} onClick={children.command}>
+        <button
+          className={style.label}
+          onClick={() => callback && callback(item.command)}
+        >
           {typeof Label === 'string' ? Label : <Label/>}
         </button>
       )}

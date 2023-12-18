@@ -1,71 +1,75 @@
-.command,
-.label {
-  display: flex;
-  padding: var(--interval-small);
-  text-align: left;
-}
-
 .menu {
-  white-space: nowrap;
-  border-bottom: solid var(--interval-minimum) var(--color-theme-hard);
-  background-color: var(--background);
-
   --background: var(--color-theme-soft);
   --hovered: var(--color-theme-light);
-
-  & > .list {
-    & > .item > .label > svg {
-      display: none;
-    }
-
-    & .list {
-      position: absolute;
-      flex-direction: column;
-      pointer-events: none;
-      opacity: 0;
-      border: solid var(--interval-minimum) var(--hovered);
-
-      & .command,
-      & .label {
-        width: 10em;
-      }
-
-      & .list {
-        top: calc(var(--interval-minimum) * -1);
-        left: 100%;
-
-        & .command,
-        & .label {
-          padding: calc(var(--interval-small) - var(--interval-minimum) / 2);
-        }
-      }
-    }
-  }
 }
 
 .list {
+  position: absolute;
+  z-index: var(--z-index-up);
+  top: calc(var(--interval-minimum) * -1);
+  left: 100%;
   display: flex;
-  transition: var(--timing-base);
-}
-
-.item {
-  position: relative;
-  transition: var(--timing-base);
-  background-color: var(--background);
-
-  &:hover {
-    transition-duration: var(--timing-tick);
-    background-color: var(--hovered);
-
-    & > .list {
-      z-index: var(--z-index-up);
-      transition-duration: var(--timing-tick);
-      pointer-events: all;
-      opacity: 1;
-    }
-  }
+  flex-direction: column;
+  transition-duration: var(--timing-tick);
+  transition-property: opacity;
+  border: solid var(--interval-minimum) var(--hovered);
 }
 
 .label {
+  display: flex;
   justify-content: space-between;
+  padding: var(--interval-small);
+  text-align: left;
+  gap: 1em;
+}
+
+.item {
+  transition: var(--timing-base);
+
+  &:not(:last-of-type) {
+    border-bottom: solid var(--interval-minimum) transparent;
+  }
+
+  &:hover {
+    transition-duration: var(--timing-tick);
+    border-bottom-color: var(--hovered);
+    background-color: var(--hovered);
+  }
+
+  &:not(:hover) > .list {
+    z-index: 0;
+    transition-duration: var(--timing-base);
+    pointer-events: none;
+    opacity: 0;
+  }
+}
+
+.menu {
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+}
+
+.item,
+.menu {
+  position: relative;
+  background-color: var(--background);
+}
+
+.header {
+  flex-direction: row;
+  width: 100%;
+
+  & > .item {
+    border: none;
+
+    & > .label > .next {
+      display: none;
+    }
+
+    & > .list {
+      top: 100%;
+      left: 0;
+    }
+  }
 }

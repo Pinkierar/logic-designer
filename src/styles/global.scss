@@ -64,7 +64,12 @@ ul {
 
 button {
   display: flex;
+  user-select: none;
   cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
 }
 
 input {

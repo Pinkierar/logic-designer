@@ -1,20 +1,23 @@
-import {useLocalStorage, useResized} from '#hooks';
+import {List} from '#components/atoms';
+import {useDialogContext} from '#components/Dialog';
+import {Menu} from '#components/Menu';
+import {useClickOutside, useEventListener, useLocalStorage, useResized, useToggle} from '#hooks';
 import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
-import {cl} from '#utils/cl';
-import {CSSProperties, HTMLAttributes, memo, useEffect, useMemo, useState} from 'react';
+import {checkNever} from '#utils/checkNever';
+import {classNames} from '#utils/classNames';
+import type {InlineStyle} from '#utils/InlineStyle';
+import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
+import {Dispatch, memo, SetStateAction, useEffect, useMemo, useRef, useState} from 'react';
 import {GrContract, GrExpand, GrStorage, GrTarget, GrUpdate} from 'react-icons/gr';
-import {ExplorerContextProvider, SetCollapsed} from './Context';
+import {ExplorerContextProvider, MenuOptions} from './Context';
 import {Directory} from './Directory';
 import style from './style.module.scss';
 
-type ExplorerPropsMin = {
-  children?: never,
-  onResize?: () => void,
-};
+const WIDTH_KEY = 'explorer-width';
+const WIDTH_INIT = window.innerWidth * 0.2;
 
-type ExplorerProps =
-  Omit<HTMLAttributes<HTMLElement>, keyof ExplorerPropsMin>
-  & ExplorerPropsMin;
+const ROLLED_KEY = 'explorer-rolled';
+const ROLLED_INIT = false;
 
 const inline = {
   width: (width: number) => {
@@ -24,13 +27,23 @@ const inline = {
       width: `calc(${limited}px - var(--resizer-width) / 2)`,
     };
   },
-} as const satisfies { [className: string]: (...args: any[]) => CSSProperties };
+  menu: (pageX: number, pageY: number) => {
+    return {
+      left: `${pageX}px`,
+      top: `${pageY}px`,
+    };
+  },
+} satisfies InlineStyle;
 
-const WIDTH_KEY = 'explorer-width';
-const WIDTH_INIT = window.innerWidth * 0.2;
+type MenuState = {
+  pageX: number,
+  pageY: number,
+  options: MenuOptions | null,
+};
 
-const ROLLED_KEY = 'explorer-rolled';
-const ROLLED_INIT = false;
+type ExplorerProps = OmitChildren<IncludeHTMLProps<{
+  onResize?: () => void,
+}>>;
 
 export const Explorer = memo<ExplorerProps>(props => {
   const {
@@ -39,19 +52,18 @@ export const Explorer = memo<ExplorerProps>(props => {
     ...otherProps
   } = props;
 
-  const savedRolled = useLocalStorage(
-    ROLLED_KEY,
-    () => rolled,
-    ROLLED_INIT,
-  );
-  const savedWidth = useLocalStorage(
-    WIDTH_KEY,
-    () => width,
-    WIDTH_INIT,
-  );
+  const {alert, confirm, prompt} = useDialogContext();
+
+  const menuRef = useRef<HTMLUListElement>(null);
+
+  const savedRolled = useLocalStorage(ROLLED_KEY, () => rolled, ROLLED_INIT);
+  const savedWidth = useLocalStorage(WIDTH_KEY, () => width, WIDTH_INIT);
 
   const [rootDirectories, setRootDirectories] = useState<DirectoryData[] | null>(null);
-  const [rolled, setRolled] = useState<boolean>(savedRolled === 'true');
+
+  const [menu, setMenu] = useState<MenuState>({pageX: 0, pageY: 0, options: null});
+
+  const [rolled, toggleRolled] = useToggle(savedRolled === 'true');
 
   const [width, dragging, downHandler] = useResized(
     event => event.pageX,
@@ -59,7 +71,73 @@ export const Explorer = memo<ExplorerProps>(props => {
     Number(savedWidth),
   );
 
-  const collapsedSetters = useMemo(() => new Set<SetCollapsed>(), [rootDirectories]);
+  const collapsedSetters = useMemo(
+    () => new Set<Dispatch<SetStateAction<boolean>>>(),
+    [rootDirectories],
+  );
+
+  const menuCallback = (command: string) => {
+    const {options} = menu;
+
+    hideMenu();
+
+    if (!options) return null;
+
+    if (options.type === 'file') {
+      const file = options.data;
+
+      if (command === 'file remove') {
+        return confirm('Удаление', `Удалить файл "${file.name}"?`, () => {
+          console.log(`Файл "${file.name}" удаляется...`);
+        });
+      }
+
+      if (command === 'file rename') {
+        return prompt('Переименование', `Изменить имя файла "${file.name}" на:`, value => {
+          console.log(`Имя файла "${file.name}" меняется на "${value}"...`);
+        }, file.name);
+      }
+
+      throw new Error(`unknown command "${command}"`);
+    }
+
+    if (options.type === 'directory') {
+      const folder = options.data;
+
+      if (command === 'file new') {
+        return prompt('Новый файл', 'Имя нового файла:', value => {
+          console.log(`Создаётся файл "${value}"...`);
+        });
+      }
+
+      if (command === 'folder new') {
+        return prompt('Новая папка', 'Имя новой папки:', value => {
+          console.log(`Создаётся папка "${value}"...`);
+        });
+      }
+
+      if (command === 'folder remove') {
+        return confirm('Удаление', `Удалить папку "${folder.name}"?`, () => {
+          console.log(`Папка "${folder.name}" удаляется...`);
+        });
+      }
+
+      if (command === 'folder rename') {
+        return prompt('Переименование', `Изменить имя папки "${folder.name}" на:`, value => {
+          console.log(`Имя папки "${folder.name}" меняется на "${value}"...`);
+        }, folder.name);
+      }
+
+      if (command === 'folder update') {
+        return alert('Обновление', `Папка "${folder.name}" обновляется...`);
+      }
+
+      throw new Error(`unknown command "${command}"`);
+    }
+
+    checkNever(options);
+    throw new Error('options is not never');
+  };
 
   const setAllCollapsed = (collapsed: boolean) => {
     collapsedSetters.forEach(setCollapsed => {
@@ -67,15 +145,21 @@ export const Explorer = memo<ExplorerProps>(props => {
     });
   };
 
-  const downloadRootDirectories = async () => {
-    try {
-      const directories = await DirectoryRepository.getAll();
-
-      setRootDirectories(directories);
-    } catch (e) {
-      console.error(e);
-    }
+  const showMenu = ({pageX, pageY}: MouseEvent, options: MenuOptions): void => {
+    setMenu({pageX, pageY, options});
   };
+
+  const hideMenu = (): void => {
+    if (!menu.options) return;
+
+    setMenu(menu => ({...menu, options: null}));
+  };
+
+  useEffect(() => {
+    DirectoryRepository.getAll()
+      .then(directories => setRootDirectories(directories))
+      .catch(e => console.error(e));
+  }, []);
 
   useEffect(() => {
     if (!onResize) return;
@@ -83,40 +167,24 @@ export const Explorer = memo<ExplorerProps>(props => {
     onResize();
   }, [width, rolled]);
 
-  useEffect(() => {
-    downloadRootDirectories();
-  }, []);
+  useClickOutside(menuRef, hideMenu);
+  useEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
 
-  const list = useMemo(() => (
-    <div className={style.content}>
-      {rootDirectories ? (
-        <ExplorerContextProvider value={{
-          addSetCollapsed: collapsedSetters.add.bind(collapsedSetters),
-          removeSetCollapsed: collapsedSetters.delete.bind(collapsedSetters),
-        }}>
-          {rootDirectories.map(rootDirectory => (
-            <Directory key={rootDirectory.id} minData={rootDirectory}/>
-          ))}
-        </ExplorerContextProvider>
-      ) : (
-        <div className={style.folder}>
-          <div className={style.label}>
-            <button>
-              <GrUpdate className={style.refresh}/>
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  ), [collapsedSetters, rootDirectories]);
+    hideMenu();
+  });
 
   return (
-    <section className={cl(style.container, rolled && style.rolled, className)} {...otherProps}>
-      <div className={style.header}>
-        <button onClick={() => setRolled(rolled => !rolled)}>
+    <List
+      vertical={true}
+      className={classNames(style.container, rolled && style.rolled, className)}
+      {...otherProps}
+    >
+      <List className={style.header}>
+        <button onClick={toggleRolled}>
           <GrStorage/>
         </button>
-        <div className={style.tools}>
+        <List gap={0} className={style.tools}>
           <button>
             <GrTarget/>
           </button>
@@ -126,15 +194,54 @@ export const Explorer = memo<ExplorerProps>(props => {
           <button onClick={() => setAllCollapsed(true)}>
             <GrContract/>
           </button>
-        </div>
-      </div>
+        </List>
+      </List>
       <div
-        className={cl(style.explorer, dragging && style.dragging)}
+        className={classNames(style.explorer, dragging && style.dragging)}
         style={rolled ? void 0 : inline.width(width)}
       >
-        {list}
+        <List vertical={true} className={style.content}>
+          {rootDirectories ? (
+            <ExplorerContextProvider value={{
+              addSetCollapsed: collapsedSetters.add.bind(collapsedSetters),
+              removeSetCollapsed: collapsedSetters.delete.bind(collapsedSetters),
+              showMenu: showMenu,
+            }}>
+              {rootDirectories.map(directory => (
+                <Directory key={directory.id} minData={directory}/>
+              ))}
+            </ExplorerContextProvider>
+          ) : (
+            <div className={style.loading}>
+              <GrUpdate className={'rotation'}/>
+            </div>
+          )}
+        </List>
       </div>
       <button className={style.resizeMe} onPointerDown={downHandler}/>
-    </section>
+      {menu.options && (
+        <Menu
+          className={style.menu}
+          style={inline.menu(menu.pageX, menu.pageY)}
+          items={menu.options.type === 'file' ? [
+            {label: 'Удалить', command: 'file remove'},
+            {label: 'Переименовать', command: 'file rename'},
+          ] : menu.options.type === 'directory' ? [
+            {
+              label: 'Добавить',
+              items: [
+                {label: 'Файл', command: 'file new'},
+                {label: 'Папку', command: 'folder new'},
+              ],
+            },
+            {label: 'Удалить', command: 'folder remove'},
+            {label: 'Переименовать', command: 'folder rename'},
+            {label: 'Обновить', command: 'folder update'},
+          ] : checkNever(menu.options)}
+          callback={menuCallback}
+          ref={menuRef}
+        />
+      )}
+    </List>
   );
 });
