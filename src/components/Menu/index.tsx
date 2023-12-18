@@ -1,11 +1,11 @@
 import {classNames} from '#utils/classNames';
 import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
 import {forwardRef, memo} from 'react';
-import {Item, MenuItem} from './Item';
+import {MenuChild, MenuItem} from './Item';
 import style from './style.module.scss';
 
 type MenuProps = OmitChildren<IncludeHTMLProps<{
-  items: Item[],
+  items: MenuItem[],
 }, HTMLUListElement>>;
 
 export const Menu = memo(forwardRef<HTMLUListElement, MenuProps>((props, ref) => {
@@ -22,9 +22,7 @@ export const Menu = memo(forwardRef<HTMLUListElement, MenuProps>((props, ref) =>
       ref={ref}
     >
       {items.map((item, index) => (
-        <MenuItem key={index}>
-          {item}
-        </MenuItem>
+        <MenuChild key={index} item={item}/>
       ))}
     </ul>
   );

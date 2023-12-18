@@ -10,6 +10,55 @@ type AppProps = {
   canvasController: CanvasController,
 };
 
+const menuItems = [
+  {
+    label: GrCli,
+    command: () => {
+      alert('Pinkierar');
+    },
+  },
+  {
+    label: 'Файл',
+    list: [
+      {
+        label: 'Новый',
+        list: [
+          {
+            label: 'Проект',
+            command: () => {
+            },
+          },
+        ],
+      },
+      {
+        label: 'Открыть...',
+        command: () => {
+        },
+      },
+      {
+        label: 'Сохранить как',
+        command: () => {
+        },
+      },
+      {
+        label: 'Закрыть проект',
+        command: () => {
+        },
+      },
+    ],
+  },
+  {
+    label: 'Помощь',
+    list: [
+      {
+        label: 'О программе',
+        command: () => {
+        },
+      },
+    ],
+  },
+]
+
 export const App = memo<AppProps>(props => {
   const {
     canvasController,
@@ -17,54 +66,7 @@ export const App = memo<AppProps>(props => {
 
   return (
     <div className={style.base}>
-      <MenuHeader className={style.menu} items={[
-        {
-          label: GrCli,
-          command: () => {
-            alert('Pinkierar');
-          },
-        },
-        {
-          label: 'Файл',
-          list: [
-            {
-              label: 'Новый',
-              list: [
-                {
-                  label: 'Проект',
-                  command: () => {
-                  },
-                },
-              ],
-            },
-            {
-              label: 'Открыть...',
-              command: () => {
-              },
-            },
-            {
-              label: 'Сохранить как',
-              command: () => {
-              },
-            },
-            {
-              label: 'Закрыть проект',
-              command: () => {
-              },
-            },
-          ],
-        },
-        {
-          label: 'Помощь',
-          list: [
-            {
-              label: 'О программе',
-              command: () => {
-              },
-            },
-          ],
-        },
-      ]}/>
+      <MenuHeader className={style.menu} items={menuItems}/>
       <div className={style.content}>
         <Explorer onResize={canvasController.resizeHandler} className={style.explorer}/>
         <View className={style.view} controller={canvasController}/>

@@ -5,40 +5,38 @@ import style from './style.module.scss';
 
 type Label = { label: string | IconType };
 type Command = Label & { command: () => void };
-type Container = Label & { list: Item[] };
-export type Item = Command | Container;
+type Container = Label & { list: (Command | Container)[] };
+export type MenuItem = Command | Container;
 
 type MenuItemProps = {
-  children: Item,
+  item: MenuItem,
 };
 
-export const MenuItem = memo<MenuItemProps>(props => {
+export const MenuChild = memo<MenuItemProps>(props => {
   const {
-    children,
+    item,
   } = props;
 
   const {
     label: Label,
-  } = children;
+  } = item;
 
   return (
     <li className={style.item}>
-      {'list' in children ? (
+      {'list' in item ? (
         <>
           <div className={style.label}>
             {typeof Label === 'string' ? Label : <Label/>}
             <GrFormNext className={style.next}/>
           </div>
           <ul className={style.list}>
-            {children.list.map((item, index) => (
-              <MenuItem key={index}>
-                {item}
-              </MenuItem>
+            {item.list.map((item, index) => (
+              <MenuChild key={index} item={item}/>
             ))}
           </ul>
         </>
       ) : (
-        <button className={style.label} onClick={children.command}>
+        <button className={style.label} onClick={item.command}>
           {typeof Label === 'string' ? Label : <Label/>}
         </button>
       )}

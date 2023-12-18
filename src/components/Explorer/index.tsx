@@ -2,6 +2,7 @@ import {List} from '#components/atoms';
 import {Menu} from '#components/Menu';
 import {useClickOutside, useEventListener, useLocalStorage, useResized, useToggle} from '#hooks';
 import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
+import {checkNever} from '#utils/checkNever';
 import {classNames} from '#utils/classNames';
 import type {InlineStyle} from '#utils/InlineStyle';
 import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
@@ -40,7 +41,7 @@ type ExplorerProps = OmitChildren<IncludeHTMLProps<{
 type MenuState = {
   pageX: number,
   pageY: number,
-  visible: boolean,
+  options: MenuOptions | null,
 };
 
 export const Explorer = memo<ExplorerProps>(props => {
@@ -57,6 +58,8 @@ export const Explorer = memo<ExplorerProps>(props => {
 
   const [rootDirectories, setRootDirectories] = useState<DirectoryData[] | null>(null);
 
+  const [menu, setMenu] = useState<MenuState>({pageX: 0, pageY: 0, options: null});
+
   const [rolled, toggleRolled] = useToggle(savedRolled === 'true');
 
   const [width, dragging, downHandler] = useResized(
@@ -70,26 +73,78 @@ export const Explorer = memo<ExplorerProps>(props => {
     [rootDirectories],
   );
 
+  const menuItems = useMemo(
+    () => {
+      const {options} = menu;
+
+      if (!options) return null;
+
+      if (options.type === 'file') return [
+        {
+          label: 'Удалить',
+          command: () => {
+          },
+        },
+        {
+          label: 'Переименовать',
+          command: () => {
+          },
+        },
+      ];
+
+      if (options.type === 'directory') return [
+        {
+          label: 'Добавить',
+          list: [
+            {
+              label: 'Файл',
+              command: () => {
+              },
+            },
+            {
+              label: 'Папку',
+              command: () => {
+              },
+            },
+          ],
+        },
+        {
+          label: 'Удалить',
+          command: () => {
+          },
+        },
+        {
+          label: 'Переименовать',
+          command: () => {
+          },
+        },
+        {
+          label: 'Обновить',
+          command: () => {
+          },
+        },
+      ];
+
+      checkNever(options);
+      throw new Error('options is not never');
+    },
+    [menu.options],
+  );
+
   const setAllCollapsed = (collapsed: boolean) => {
     collapsedSetters.forEach(setCollapsed => {
       setCollapsed(collapsed);
     });
   };
 
-  const [menu, setMenu] = useState<MenuState>({pageX: 0, pageY: 0, visible: false});
-
-  const showMenu = (
-    {pageX, pageY}: MouseEvent,
-    {type, data: minData}: MenuOptions,
-  ) => {
-    setMenu({pageX, pageY, visible: true});
-    console.log('showMenu', type, minData);
+  const showMenu = ({pageX, pageY}: MouseEvent, options: MenuOptions): void => {
+    setMenu({pageX, pageY, options});
   };
 
-  const hideMenu = () => {
-    if (!menu.visible) return;
+  const hideMenu = (): void => {
+    if (!menu.options) return;
 
-    setMenu(menu => ({...menu, visible: false}));
+    setMenu(menu => ({...menu, options: null}));
   };
 
   useEffect(() => {
@@ -156,43 +211,14 @@ export const Explorer = memo<ExplorerProps>(props => {
         </List>
       </div>
       <button className={style.resizeMe} onPointerDown={downHandler}/>
-      <Menu
-        className={classNames(style.menu, menu.visible && style.visible)}
-        style={inline.menu(menu.pageX, menu.pageY)}
-        items={[
-          {
-            label: 'Добавить',
-            list: [
-              {
-                label: 'Файл',
-                command: () => {
-                },
-              },
-              {
-                label: 'Папку',
-                command: () => {
-                },
-              },
-            ],
-          },
-          {
-            label: 'Удалить',
-            command: () => {
-            },
-          },
-          {
-            label: 'Переименовать',
-            command: () => {
-            },
-          },
-          {
-            label: 'Обновить',
-            command: () => {
-            },
-          },
-        ]}
-        ref={menuRef}
-      />
+      {menuItems && (
+        <Menu
+          className={style.menu}
+          style={inline.menu(menu.pageX, menu.pageY)}
+          items={menuItems}
+          ref={menuRef}
+        />
+      )}
     </List>
   );
 });

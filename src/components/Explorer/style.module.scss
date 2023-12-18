@@ -54,7 +54,6 @@
 
 .rolled > .explorer > .content,
 .rolled > .resizeMe,
-.rolled > .header > .tools,
-.menu:not(.visible) {
+.rolled > .header > .tools {
   display: none;
 }
