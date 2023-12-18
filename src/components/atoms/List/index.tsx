@@ -1,7 +1,7 @@
 import {classNames} from '#utils/classNames';
 import {InlineStyle} from '#utils/InlineStyle';
 import {IncludeHTMLProps} from '#utils/props';
-import {HTMLAttributes, memo, ReactNode} from 'react';
+import {forwardRef, HTMLAttributes, memo, ReactNode} from 'react';
 import style from './style.module.scss';
 
 type ListPropsMin = {
@@ -11,7 +11,7 @@ type ListPropsMin = {
 
 type ListProps = IncludeHTMLProps<ListPropsMin>;
 
-export const List = memo<ListProps>(props => {
+export const List = memo(forwardRef<HTMLDivElement, ListProps>((props, ref) => {
   const {
     children,
     className,
@@ -29,8 +29,9 @@ export const List = memo<ListProps>(props => {
       )}
       style={{gap}}
       {...otherProps}
+      ref={ref}
     >
       {children}
     </div>
   );
-});
+}));

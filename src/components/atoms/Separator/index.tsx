@@ -3,9 +3,9 @@ import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
 import {memo} from 'react';
 import style from './style.module.scss';
 
-type FlexSeparatorProps = OmitChildren<IncludeHTMLProps<{}, HTMLDivElement>>;
+type SeparatorProps = OmitChildren<IncludeHTMLProps<{}, HTMLDivElement>>;
 
-export const FlexSeparator = memo<FlexSeparatorProps>(props => {
+export const Separator = memo<SeparatorProps>(props => {
   const {
     className,
     ...otherProps

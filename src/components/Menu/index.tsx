@@ -6,11 +6,13 @@ import style from './style.module.scss';
 
 type MenuProps = OmitChildren<IncludeHTMLProps<{
   items: MenuItem[],
+  callback: (command: string) => void,
 }, HTMLUListElement>>;
 
 export const Menu = memo(forwardRef<HTMLUListElement, MenuProps>((props, ref) => {
   const {
     items,
+    callback,
     className,
     ...otherProps
   } = props;
@@ -22,7 +24,7 @@ export const Menu = memo(forwardRef<HTMLUListElement, MenuProps>((props, ref) =>
       ref={ref}
     >
       {items.map((item, index) => (
-        <MenuChild key={index} item={item}/>
+        <MenuChild key={index} item={item} callback={callback}/>
       ))}
     </ul>
   );

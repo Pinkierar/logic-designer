@@ -1,4 +1,5 @@
 import {List} from '#components/atoms';
+import {useDialogContext} from '#components/Dialog';
 import {Menu} from '#components/Menu';
 import {useClickOutside, useEventListener, useLocalStorage, useResized, useToggle} from '#hooks';
 import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
@@ -34,15 +35,15 @@ const inline = {
   },
 } satisfies InlineStyle;
 
-type ExplorerProps = OmitChildren<IncludeHTMLProps<{
-  onResize?: () => void,
-}>>;
-
 type MenuState = {
   pageX: number,
   pageY: number,
   options: MenuOptions | null,
 };
+
+type ExplorerProps = OmitChildren<IncludeHTMLProps<{
+  onResize?: () => void,
+}>>;
 
 export const Explorer = memo<ExplorerProps>(props => {
   const {
@@ -50,6 +51,8 @@ export const Explorer = memo<ExplorerProps>(props => {
     onResize,
     ...otherProps
   } = props;
+
+  const {alert, confirm, prompt} = useDialogContext();
 
   const menuRef = useRef<HTMLUListElement>(null);
 
@@ -73,63 +76,68 @@ export const Explorer = memo<ExplorerProps>(props => {
     [rootDirectories],
   );
 
-  const menuItems = useMemo(
-    () => {
-      const {options} = menu;
+  const menuCallback = (command: string) => {
+    const {options} = menu;
 
-      if (!options) return null;
+    hideMenu();
 
-      if (options.type === 'file') return [
-        {
-          label: 'Удалить',
-          command: () => {
-          },
-        },
-        {
-          label: 'Переименовать',
-          command: () => {
-          },
-        },
-      ];
+    if (!options) return null;
 
-      if (options.type === 'directory') return [
-        {
-          label: 'Добавить',
-          list: [
-            {
-              label: 'Файл',
-              command: () => {
-              },
-            },
-            {
-              label: 'Папку',
-              command: () => {
-              },
-            },
-          ],
-        },
-        {
-          label: 'Удалить',
-          command: () => {
-          },
-        },
-        {
-          label: 'Переименовать',
-          command: () => {
-          },
-        },
-        {
-          label: 'Обновить',
-          command: () => {
-          },
-        },
-      ];
+    if (options.type === 'file') {
+      const file = options.data;
 
-      checkNever(options);
-      throw new Error('options is not never');
-    },
-    [menu.options],
-  );
+      if (command === 'file remove') {
+        return confirm('Удаление', `Удалить файл "${file.name}"?`, () => {
+          console.log(`Файл "${file.name}" удаляется...`);
+        });
+      }
+
+      if (command === 'file rename') {
+        return prompt('Переименование', `Изменить имя файла "${file.name}" на:`, value => {
+          console.log(`Имя файла "${file.name}" меняется на "${value}"...`);
+        }, file.name);
+      }
+
+      throw new Error(`unknown command "${command}"`);
+    }
+
+    if (options.type === 'directory') {
+      const folder = options.data;
+
+      if (command === 'file new') {
+        return prompt('Новый файл', 'Имя нового файла:', value => {
+          console.log(`Создаётся файл "${value}"...`);
+        });
+      }
+
+      if (command === 'folder new') {
+        return prompt('Новая папка', 'Имя новой папки:', value => {
+          console.log(`Создаётся папка "${value}"...`);
+        });
+      }
+
+      if (command === 'folder remove') {
+        return confirm('Удаление', `Удалить папку "${folder.name}"?`, () => {
+          console.log(`Папка "${folder.name}" удаляется...`);
+        });
+      }
+
+      if (command === 'folder rename') {
+        return prompt('Переименование', `Изменить имя папки "${folder.name}" на:`, value => {
+          console.log(`Имя папки "${folder.name}" меняется на "${value}"...`);
+        }, folder.name);
+      }
+
+      if (command === 'folder update') {
+        return alert('Обновление', `Папка "${folder.name}" обновляется...`);
+      }
+
+      throw new Error(`unknown command "${command}"`);
+    }
+
+    checkNever(options);
+    throw new Error('options is not never');
+  };
 
   const setAllCollapsed = (collapsed: boolean) => {
     collapsedSetters.forEach(setCollapsed => {
@@ -211,11 +219,26 @@ export const Explorer = memo<ExplorerProps>(props => {
         </List>
       </div>
       <button className={style.resizeMe} onPointerDown={downHandler}/>
-      {menuItems && (
+      {menu.options && (
         <Menu
           className={style.menu}
           style={inline.menu(menu.pageX, menu.pageY)}
-          items={menuItems}
+          items={menu.options.type === 'file' ? [
+            {label: 'Удалить', command: 'file remove'},
+            {label: 'Переименовать', command: 'file rename'},
+          ] : menu.options.type === 'directory' ? [
+            {
+              label: 'Добавить',
+              items: [
+                {label: 'Файл', command: 'file new'},
+                {label: 'Папку', command: 'folder new'},
+              ],
+            },
+            {label: 'Удалить', command: 'folder remove'},
+            {label: 'Переименовать', command: 'folder rename'},
+            {label: 'Обновить', command: 'folder update'},
+          ] : checkNever(menu.options)}
+          callback={menuCallback}
           ref={menuRef}
         />
       )}
