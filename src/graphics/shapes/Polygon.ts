@@ -9,19 +9,28 @@ type PolygonOption = {
 
 export class PolygonShape extends Shape {
   protected vertices: Vector2f[] = [];
-  protected kind: BEGIN_KIND;
+  protected kind!: BEGIN_KIND;
   protected style: Style;
 
   public constructor(vertices: Vector2f[], options: PolygonOption = {}) {
     super();
 
-    this.kind = options.kind ?? this.p.TESS;
-
-    if (vertices.length < 3)
-      throw new Error('The polygon must contain at least three vertices');
+    this.setKind(options.kind ?? this.p.TESS);
 
     this.vertices = vertices;
     this.style = options.style ?? {};
+  }
+
+  public setKind(kind: BEGIN_KIND): void {
+    this.kind = kind;
+  }
+
+  public getVertex(index: number): Vector2f {
+    return this.vertices[index];
+  }
+
+  public setVertex(index: number, position: Vector2f): void {
+    this.vertices[index] = position;
   }
 
   public toBoundingBox(): BoundingBox {

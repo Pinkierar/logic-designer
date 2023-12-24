@@ -1,20 +1,22 @@
 import {CanvasController} from '#app';
-import {Contextual, Interactive, TwilightSparkle} from '#graphics';
+import {Circle, Contextual, Interactive, Line} from '#graphics';
 import P5, {CURSOR_TYPE} from 'p5';
 
 const sketch = (canvasController: CanvasController, p: P5Type) => {
-  const {ARROW, DEGREES, HAND, HSL, P2D, ROUND, CENTER, LEFT, TOP} = p;
-  const NOISE_MAX = 15.5;
+  const {ARROW, DEGREES, HAND, HSL, P2D, ROUND, LEFT, TOP} = p;
+  // const NOISE_MAX = 15.5;
 
   p.colorMode(HSL, 360, 100, 100, 1);
   p.angleMode(DEGREES);
 
   let cursor: CURSOR_TYPE = ARROW;
   let mouseAbove: Interactive | null = null;
+  let dragged: Interactive | null = null;
   const deltaTimes: number[] = new Array(20);
+  const entitiesCount = 100;
 
   const onEntityJoin = function (this: Interactive) {
-    this.getControlled().setStyle({strokeWeight: 2, stroke: [0, 50, 100]});
+    this.getControlled().setStyle({stroke: [0, 50, 100]});
     mouseAbove = this;
 
     cursor = HAND;
@@ -25,20 +27,43 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
 
     cursor = ARROW;
   };
-  const generateEntity = (zIndex: number) => {
-    const twilight = new TwilightSparkle({zIndex});
+  const generateCircle = (index: number) => {
+    const zIndex = index / entitiesCount;
+    const radius = 20 + zIndex * 10;
+    const x = index % 10;
+    const y = p.floor(index / 10);
 
-    twilight.enter = onEntityJoin;
-    twilight.leave = onEntityLeave;
+    const circle = new Circle({
+      color: p.floor(p.noise(x * 0.3, y * 0.3) * 700) % 360,
+      zIndex: index,
+      radius: radius,
+      position: [50 + x * 80, 50 + y * 80],
+    });
 
-    return twilight;
+    circle.enter = onEntityJoin;
+    circle.leave = onEntityLeave;
+
+    return circle;
   };
 
-  const entitiesCount = 100;
-  const entities = Array.from(
-    {length: entitiesCount},
-    (_, i) => generateEntity(i / entitiesCount),
-  );
+  const line = new Line({});
+  const circles = new Array<Circle>(entitiesCount);
+  for (let i = 0; i < entitiesCount; i++) {
+    const circle = circles[i] = generateCircle(i);
+
+    // if (i !== 0) circle.addParent(circles[i - 1]);
+  }
+
+  const linesCount = p.floor(p.random(0, 30));
+  for (let i = 0; i < linesCount; i++) {
+    try {
+      const indexFrom = p.floor(p.random(0, circles.length));
+      const indexTo = p.floor(p.random(0, circles.length));
+      circles[indexFrom].addParent(circles[indexTo]);
+    } catch (e) {
+
+    }
+  }
 
   p.setup = () => {
     const renderer = p.createCanvas(1, 1, P2D, canvasController.canvas);
@@ -58,33 +83,19 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
   };
 
   p.draw = () => {
-    const {width, height, deltaTime, frameCount, mouseX, mouseY, mouseIsPressed} = p;
+    const {deltaTime, frameCount, mouseX, mouseY, mouseIsPressed} = p;
     deltaTimes[frameCount % deltaTimes.length] = deltaTime;
-    const centerX = width / 2;
-    const centerY = height / 2;
-
-    entities.forEach((entity, i) => {
-      const mult = deltaTime * (i / 100 + 0.1) / 200;
-      const x = i;
-      const t = p.millis() / 5000;
-      const movementX = (p.noise(x, 0, t) - 0.5) * mult;
-      const movementY = (p.noise(x, NOISE_MAX / 2, t) - 0.5) * mult;
-
-      entity.move(movementX, movementY);
-
-      const [positionX, positionY] = entity.getPosition();
-
-      let normalizedPositionX = positionX;
-      let normalizedPositionY = positionY;
-      if (positionX < -width) normalizedPositionX = width * 2;
-      if (positionY < -height) normalizedPositionY = height * 2;
-      if (positionX > width * 2) normalizedPositionX = -width;
-      if (positionY > height * 2) normalizedPositionY = -height;
-      entity.setPosition(normalizedPositionX, normalizedPositionY);
-    });
 
     if (mouseIsPressed && mouseAbove) {
-      mouseAbove.setPosition(mouseX, mouseY);
+      if (!dragged) {
+        dragged = mouseAbove;
+      }
+    } else {
+      dragged = null;
+    }
+
+    if (dragged) {
+      dragged.setPosition(mouseX, mouseY);
     } else {
       Interactive.update(mouseX, mouseY);
     }
@@ -93,11 +104,15 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
 
     p.clear(0, 0, 0, 0);
 
-    entities.forEach(entity => {
-      entity.draw();
-      // mouseAbove && entity.drawBoundingEntity();
-      // entity.drawBoundingEntity();
+    circles.forEach(circle => {
+      line.setFrom(circle.getControlled().getPosition());
+      for (const parent of circle.getParents()) {
+        line.setTo(parent.getControlled().getPosition());
+        line.draw();
+      }
     });
+
+    circles.forEach(circle => circle.draw());
 
     p.push();
     p.fill(p.color(0, 0, 100, 0.8));
@@ -107,35 +122,29 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
     p.pop();
   };
 
-  // let center!: Vector2f;
   // p.mousePressed = () => {
-  //   const {width, height, deltaTime, frameCount, mouseX, mouseY, mouseIsPressed} = p;
+  //   const {mouseX, mouseY} = p;
   //
-  //   if (!center) {
-  //     center = [mouseX, mouseY];
-  //     console.log(`center = [${mouseX}, ${mouseY}]`);
-  //     return
-  //   }
+  //   console.log(`down = [${mouseX}, ${mouseY}]`);
   //
-  //   const [centerX, centerY] = center;
-  //
-  //   console.log(`[${mouseX - centerX}, ${mouseY - centerY}],`);
-  // }
+  //   // if (mouseAbove) {
+  //   //   mouseAbove.setPosition(mouseX, mouseY);
+  //   // } else {
+  //   //   Interactive.update(mouseX, mouseY);
+  //   // }
+  // };
   //
   // p.mouseReleased = () => {
-  //   const {width, height, deltaTime, frameCount, mouseX, mouseY, mouseIsPressed} = p;
-  // }
+  //   const {mouseX, mouseY} = p;
+  //
+  //   console.log(`up = [${mouseX}, ${mouseY}]`);
+  // };
 
-  canvasController.resized = () => {
-    const {width, height} = p;
-
-    entities.forEach(entity => {
-      entity.setPosition(
-        p.random(-width, width * 2),
-        p.random(-height, height * 2),
-      );
-    });
-  };
+  // canvasController.resized = () => {
+  //   const {width, height} = p;
+  //   centerX = width / 2;
+  //   centerY = height / 2;
+  // };
 };
 
 export const run = (canvasController: CanvasController): void => {

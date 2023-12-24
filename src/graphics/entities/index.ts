@@ -1,1 +1,2 @@
-export * from './TwilightSparkle';
+export * from './Circle';
+export * from './Line';
