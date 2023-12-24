@@ -7,3 +7,4 @@ export * from './Entity';
 export * from './shapes';
 export * from './entities';
 export * from './Interactive';
+export * from './Linkable';
