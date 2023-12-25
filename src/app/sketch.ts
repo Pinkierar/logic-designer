@@ -1,8 +1,8 @@
 import {CanvasController} from '#app';
-import {Circle, Contextual, Interactive, Line, Linkable, Twilight} from '#graphics';
-import P5, {CURSOR_TYPE} from 'p5';
+import {Circle, Interactive, Line, Linkable, Twilight} from '#graphics';
+import {CURSOR_TYPE} from 'p5';
 
-const sketch = (canvasController: CanvasController, p: P5Type) => {
+export const sketch = (canvasController: CanvasController, p: P5Type) => {
   const {ARROW, DEGREES, HAND, HSL, P2D, ROUND, LEFT, TOP} = p;
   // const NOISE_MAX = 15.5;
 
@@ -12,9 +12,21 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
   let cursor: CURSOR_TYPE = ARROW;
   let mouseAbove: Linkable | null = null;
   let dragged: Linkable | null = null;
-  const deltaTimes: number[] = new Array(20);
   let isLineMode = false;
   let ctrlKey = false;
+  const lineWidth = 22;
+  let lineNumber = 0;
+  let interpolatedFps = 60;
+  let centerX = 0;
+  let centerY = 0;
+
+  const drawText = (text: string) => {
+    p.push();
+    p.fill(p.color(0, 0, 100, 0.8));
+    p.text(text, 10, lineNumber * lineWidth + 10);
+    p.pop();
+    lineNumber++;
+  };
 
   const onEntityJoin = function (this: Linkable) {
     this.getControlled().setStyle({stroke: [0, 50, 100]});
@@ -50,7 +62,7 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
 
   const generateTwilight = (index: number): Twilight => {
     const twilight = new Twilight({
-      color: p.floor(p.noise(index / 100) * 700) % 360,
+      color: p.floor(p.noise(index / 10) * 700) % 360,
       zIndex: index,
     });
 
@@ -96,8 +108,7 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
   };
 
   p.draw = () => {
-    const {deltaTime, frameCount, mouseX, mouseY, mouseIsPressed} = p;
-    deltaTimes[frameCount % deltaTimes.length] = deltaTime;
+    const {deltaTime, mouseX, mouseY, mouseIsPressed} = p;
 
     if (mouseIsPressed && mouseAbove && !ctrlKey) {
       if (!dragged) {
@@ -115,6 +126,7 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
 
     p.cursor(cursor);
 
+    lineNumber = 0;
     p.clear(0, 0, 0, 0);
 
     circles.forEach(circle => {
@@ -127,42 +139,19 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
 
     circles.forEach(circle => circle.draw());
 
-    p.push();
-    p.fill(p.color(0, 0, 100, 0.8));
-    const sumDeltaTimes = deltaTimes.reduce((sum, time) => sum + time, 0);
-    const fps = 1000 / (sumDeltaTimes / deltaTimes.length);
-    p.text(`fps: ${p.round(fps * 10) / 10}`, 10, 10);
-    p.pop();
+    const fps = 1000 / (deltaTime || 16.7);
+    const fpsOffset = fps - interpolatedFps;
+    interpolatedFps = interpolatedFps + fpsOffset * 0.01;
+    drawText(`fps: ${interpolatedFps.toPrecision(4)}`);
 
-    p.push();
-    p.fill(p.color(0, 0, 100, 0.8));
-    p.text(`mode: ${isLineMode ? 'line' : 'circle'}`, 10, 30);
-    p.pop();
+    drawText(`mode: ${isLineMode ? 'line' : 'circle'}`);
   };
 
-  // p.mousePressed = () => {
-  //   const {mouseX, mouseY} = p;
-  //
-  //   console.log(`down = [${mouseX}, ${mouseY}]`);
-  //
-  //   // if (mouseAbove) {
-  //   //   mouseAbove.setPosition(mouseX, mouseY);
-  //   // } else {
-  //   //   Interactive.update(mouseX, mouseY);
-  //   // }
-  // };
-  //
-  // p.mouseReleased = () => {
-  //   const {mouseX, mouseY} = p;
-  //
-  //   console.log(`up = [${mouseX}, ${mouseY}]`);
-  // };
-
-  // canvasController.resized = () => {
-  //   const {width, height} = p;
-  //   centerX = width / 2;
-  //   centerY = height / 2;
-  // };
+  canvasController.resized = () => {
+    const {width, height} = p;
+    centerX = width / 2;
+    centerY = height / 2;
+  };
 
   p.keyPressed = (event: KeyboardEvent) => {
     ctrlKey = event.ctrlKey;
@@ -203,13 +192,5 @@ const sketch = (canvasController: CanvasController, p: P5Type) => {
     if (parent === mouseAbove) return;
 
     mouseAbove.addParent(parent);
-
   };
-};
-
-export const run = (canvasController: CanvasController): void => {
-  new P5((p: P5Type) => {
-    Contextual.init(p);
-    sketch(canvasController, p);
-  }, canvasController.parent ?? document.body);
 };

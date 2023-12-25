@@ -1,4 +1,4 @@
-export class CanvasController {
+class CanvasController {
   public parent: HTMLElement | null = null;
   public readonly canvas: HTMLCanvasElement;
   public setSize?: (width: number, height: number) => void;
@@ -47,3 +47,11 @@ export class CanvasController {
     this.resizeHandler = this.resizeHandler.bind(this);
   }
 }
+
+export type {
+  CanvasController,
+};
+
+export const canvasController = new CanvasController();
+
+window.addEventListener('resize', canvasController.resizeHandler);
