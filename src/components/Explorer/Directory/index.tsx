@@ -60,7 +60,10 @@ export const Directory = memo<DirectoryProps>(props => {
 
     DirectoryRepository.get(minData.id)
       .then(directory => setDirectory(directory))
-      .catch(e => console.error(e));
+      .catch(e => {
+        console.error(e);
+        setCollapsed(true);
+      });
   }, [minData.id, directory, collapsed]);
 
   return (

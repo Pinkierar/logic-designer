@@ -1,12 +1,13 @@
-import {GroupShape, Interactive, PolygonShape} from '#graphics';
-import {Entity} from '../Entity';
-import {Linkable} from '../Linkable';
+import {GroupShape, PolygonShape} from '#graphics';
 import {Vector2f} from '../Vector';
+import {Entity} from './Entity';
+import {Interactive} from './Interactive';
 
 type TwilightOptions = {
   zIndex: number,
   position?: Vector2f,
   color: number,
+  scale: number,
 }
 
 const vertices = {
@@ -118,31 +119,52 @@ const vertices = {
   ],
 } satisfies { [key: string]: Vector2f[] };
 
-Object.values(vertices).forEach(polygon => {
-  polygon.forEach(vertex => {
-    vertex[0] = vertex[0] * 0.3;
-    vertex[1] = vertex[1] * 0.3;
-  });
-});
+// Object.values(vertices).forEach(polygon => {
+//   polygon.forEach(vertex => {
+//     vertex[0] = vertex[0] * 0.3;
+//     vertex[1] = vertex[1] * 0.3;
+//   });
+// });
 
-export class Twilight extends Linkable<Entity<GroupShape<PolygonShape[]>>, PolygonShape> {
+export class Twilight extends Interactive<Entity<GroupShape<PolygonShape[]>>, PolygonShape> {
   public constructor(options: TwilightOptions) {
     const {
       zIndex = 0,
       position,
       color,
+      scale,
     } = options;
 
     super(
       new Entity(
         new GroupShape([
-          new PolygonShape(vertices.back, {style: {strokeWeight: 0, fill: [color, 50, 80]}}),
-          new PolygonShape(vertices.main),
-          new PolygonShape(vertices.star1, {style: {strokeWeight: 0, fill: [color, 50, 80]}}),
-          new PolygonShape(vertices.star2, {style: {strokeWeight: 0, fill: [color, 50, 80]}}),
-          new PolygonShape(vertices.star3, {style: {strokeWeight: 0, fill: [color, 50, 80]}}),
-          new PolygonShape(vertices.star4, {style: {strokeWeight: 0, fill: [color, 50, 80]}}),
-          new PolygonShape(vertices.star5, {style: {strokeWeight: 0, fill: [color, 50, 80]}}),
+          new PolygonShape(
+            vertices.back.map(vertex => [vertex[0] * scale, vertex[1] * scale]),
+            {style: {strokeWeight: 0, fill: [color, 50, 80]}},
+          ),
+          new PolygonShape(
+            vertices.main.map(vertex => [vertex[0] * scale, vertex[1] * scale]),
+          ),
+          new PolygonShape(
+            vertices.star1.map(vertex => [vertex[0] * scale, vertex[1] * scale]),
+            {style: {strokeWeight: 0, fill: [color, 50, 80]}},
+          ),
+          new PolygonShape(
+            vertices.star2.map(vertex => [vertex[0] * scale, vertex[1] * scale]),
+            {style: {strokeWeight: 0, fill: [color, 50, 80]}},
+          ),
+          new PolygonShape(
+            vertices.star3.map(vertex => [vertex[0] * scale, vertex[1] * scale]),
+            {style: {strokeWeight: 0, fill: [color, 50, 80]}},
+          ),
+          new PolygonShape(
+            vertices.star4.map(vertex => [vertex[0] * scale, vertex[1] * scale]),
+            {style: {strokeWeight: 0, fill: [color, 50, 80]}},
+          ),
+          new PolygonShape(
+            vertices.star5.map(vertex => [vertex[0] * scale, vertex[1] * scale]),
+            {style: {strokeWeight: 0, fill: [color, 50, 80]}},
+          ),
         ]),
         {
           style: {

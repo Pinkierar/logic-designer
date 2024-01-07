@@ -1,7 +1,7 @@
-import {Entity} from '../Entity';
-import {Linkable} from '../Linkable';
+import {Entity} from './Entity';
 import {CircleShape} from '../shapes';
 import {Vector2f} from '../Vector';
+import {Interactive} from './Interactive';
 
 type CircleOptions = {
   zIndex: number,
@@ -10,7 +10,7 @@ type CircleOptions = {
   color: number,
 };
 
-export class Circle extends Linkable<Entity<CircleShape>, CircleShape> {
+export class Circle extends Interactive<Entity<CircleShape>, CircleShape> {
   public constructor(options: CircleOptions) {
     const {
       zIndex = 0,

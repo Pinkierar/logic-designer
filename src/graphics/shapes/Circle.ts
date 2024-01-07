@@ -1,4 +1,5 @@
-import {BoundingBox, Vector2f} from '#graphics';
+import {Vector2f} from '#graphics';
+import {BoundingBox} from './BoundingBox';
 import {Shape} from './Shape';
 
 export class CircleShape extends Shape {

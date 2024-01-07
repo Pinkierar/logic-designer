@@ -1,4 +1,6 @@
-import {Entity, Interactive, PolygonShape, Vector2f, VoidShape} from '#graphics';
+import {PolygonShape, Vector2f, VoidShape} from '#graphics';
+import {Entity} from './Entity';
+import {Interactive} from './Interactive';
 
 type LineOptions = {
   from?: Vector2f,

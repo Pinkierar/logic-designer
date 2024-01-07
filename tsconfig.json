@@ -23,13 +23,13 @@
         "src/components/*"
       ],
       "#app": [
-        "src/app"
+        "src/app/index.ts"
       ],
       "#graphics": [
-        "src/graphics"
+        "src/graphics/index.ts"
       ],
-      "#repositories/*": [
-        "src/repositories/*"
+      "#repositories": [
+        "src/repositories/index.ts"
       ],
       "#hooks": [
         "src/hooks/index.ts"

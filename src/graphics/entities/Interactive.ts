@@ -1,4 +1,5 @@
-import {Entity, EntityOptions, Shape} from '#graphics';
+import {Shape} from '#graphics';
+import {Entity, EntityOptions} from './Entity';
 
 type InteractableOptions = EntityOptions & {
   zIndex?: number,

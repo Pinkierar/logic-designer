@@ -1,4 +1,4 @@
-import {Color, Drawable, Shape, Style, Vector2f} from '#graphics';
+import {Color, Drawable, Positioned, Shape, Style, Vector2f} from '#graphics';
 
 export type EntityOptions = {
   style?: Style,
@@ -6,7 +6,7 @@ export type EntityOptions = {
   rotation?: number,
 };
 
-export class Entity<S extends Shape = Shape> extends Drawable {
+export class Entity<S extends Shape = Shape> extends Drawable implements Positioned {
   protected shape: S;
 
   protected positionX: number = 0;

@@ -1,5 +1,6 @@
-import {BoundingBox, Color, Style, Vector2f, Vector4f} from '#graphics';
+import {Color, Style, Vector2f, Vector4f} from '#graphics';
 import {BEGIN_KIND} from 'p5';
+import {BoundingBox} from './BoundingBox';
 import {Shape} from './Shape';
 
 type PolygonOption = {

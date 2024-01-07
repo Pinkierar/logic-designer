@@ -1,0 +1,15 @@
+[
+  {"id":1,"name":"not","in":1,"out":1,"data":null},
+  {"id":2,"name":"or","in":1,"out":1,"data":null},
+  {"id":100,"name":"nor","in":1,"out":1,"data":[
+    {"el":2,"pos":[0,0],"to":1,"in":0},
+    {"el":1,"pos":[100,0],"out":0}]
+  },
+  {"id":101,"name":"and","in":1,"invert":true,"out":1,"data":[
+    {"el":100,"pos":[0,0],"in":0,"out":0}
+  ]},
+  {"id":102,"name":"rs-trigger","in":2,"out":2,"data":[
+    {"el":100,"pos":[0,0],"to":1,"in":0,"out":1},
+    {"el":100,"pos":[0,100],"to":0,"in":1,"out":0}
+  ]}
+]
