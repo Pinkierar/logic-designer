@@ -4,6 +4,7 @@ import {Drawable} from '#graphics';
 export abstract class LogicNode extends Drawable {
   protected positioned: Positioned;
   public getPosition: () => Vector2f;
+  public getAnimatedPosition: () => Vector2f;
   public setPosition: (x: number, y: number) => void;
 
   constructor(positioned: Positioned) {
@@ -12,6 +13,7 @@ export abstract class LogicNode extends Drawable {
     this.positioned = positioned;
 
     this.getPosition = this.positioned.getPosition.bind(this.positioned);
+    this.getAnimatedPosition = this.positioned.getAnimatedPosition.bind(this.positioned);
     this.setPosition = this.positioned.setPosition.bind(this.positioned);
   }
 

@@ -1,4 +1,4 @@
-import {Color, Drawable, Positioned, Shape, Style, Vector2f} from '#graphics';
+import {Color, Positioned, Shape, Style, Vector2f} from '#graphics';
 
 export type EntityOptions = {
   style?: Style,
@@ -6,7 +6,7 @@ export type EntityOptions = {
   rotation?: number,
 };
 
-export class Entity<S extends Shape = Shape> extends Drawable implements Positioned {
+export class Entity<S extends Shape = Shape> extends Positioned {
   protected shape: S;
 
   protected positionX: number = 0;
@@ -50,6 +50,10 @@ export class Entity<S extends Shape = Shape> extends Drawable implements Positio
     const {positionX, positionY} = this;
 
     return [positionX, positionY];
+  }
+
+  public getAnimatedPosition(): Vector2f {
+    throw new Error('not implemented')
   }
 
   public move(x: number, y: number): void {

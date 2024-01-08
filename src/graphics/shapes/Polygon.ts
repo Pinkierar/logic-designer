@@ -35,19 +35,7 @@ export class PolygonShape extends Shape {
   }
 
   public toBoundingBox(): BoundingBox {
-    const vertices = this.vertices;
-
-    const [x, y] = vertices[0];
-    const rect: Vector4f = [x, y, x, y];
-    for (let i = 1; i < vertices.length; i++) {
-      const [x, y] = vertices[i];
-      rect[0] = Math.min(rect[0], x);
-      rect[1] = Math.min(rect[1], y);
-      rect[2] = Math.max(rect[2], x);
-      rect[3] = Math.max(rect[3], y);
-    }
-
-    return new BoundingBox(...rect);
+    return BoundingBox.fromVertices(this.vertices);
   }
 
   public isInside(point: Vector2f): boolean {

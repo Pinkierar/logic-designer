@@ -33,6 +33,10 @@ export class Circle extends Interactive<Entity<CircleShape>, CircleShape> {
       new CircleShape(radius),
       {
         zIndex: zIndex,
+        style: {
+          stroke: [0, 0, 30],
+          strokeWeight: 1,
+        },
       },
     );
 

@@ -1,8 +1,9 @@
 import {CanvasController} from '#app';
 import {Circle, Interactive, Receiver, Transceiver, Transmitter} from '#graphics';
-import {FileRepository} from '#repositories';
+import {FileData, FileRepository} from '#repositories';
 import {CURSOR_TYPE} from 'p5';
 import {Button, Lamp} from '../graphics/nodes/io';
+import {BoundingBox} from '../graphics/shapes/BoundingBox';
 
 const NOISE_MAX = 15.5;
 
@@ -42,8 +43,13 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
   let tool: Tool = Tool.node;
   let mode: Mode = Mode.placement;
 
+  let transmitters: Transmitter[] = [];
+  let transceivers: Transceiver[] = [];
+  let receivers: Receiver[] = [];
+
   const drawText = (text: string) => {
     p.push();
+    p.noStroke();
     p.fill(p.color(0, 0, 100, 0.8));
     p.text(text, 10, lineNumber * lineWidth + 10);
     p.pop();
@@ -62,7 +68,6 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
 
     cursor = ARROW;
   };
-
   const activateNodeInteractive = (node: Interactive) => {
     node.enter = onEntityJoin;
     node.leave = onEntityLeave;
@@ -70,38 +75,7 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
     return node;
   };
 
-  const generateNode = (generator: (index: number) => Interactive, index: number): Interactive => {
-    const node = generator(index);
-
-    return activateNodeInteractive(node);
-  };
-
-  // const generateCircle = (index: number): Circle => {
-  //   const radius = 20 + index / 100 * 10;
-  //   const x = index % 10;
-  //   const y = p.floor(index / 10);
-  //
-  //   return new Circle({
-  //     color: p.floor(p.noise(x * 0.3, y * 0.3) * 700) % 360,
-  //     zIndex: index,
-  //     radius: radius,
-  //     position: [50 + x * 80, 50 + y * 80],
-  //   });
-  // };
-  //
-  // const generateTwilight = (index: number): Twilight => {
-  //   return new Twilight({
-  //     color: p.floor(p.noise(index / 10) * 700) % 360,
-  //     zIndex: index,
-  //     scale: 0.1,
-  //   });
-  // };
-
-  let transmitters: Transmitter[] = [];
-  let transceivers: Transceiver[] = [];
-  let receivers: Receiver[] = [];
-
-  FileRepository.get(102).then(file => {
+  const drawFile = (file: FileData): void => {
     if (!file.data) throw new Error(`file (${file.id}) is not editable logic node`);
 
     let count = 0;
@@ -123,12 +97,15 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
     }
 
     for (let i = 0; i < file.data.length; i++) {
+      const datum = file.data[i];
+      const elementId = datum.el;
+
       const node = activateNodeInteractive(new Circle({
         zIndex: count,
         radius: 60,
         color: 146,
       }));
-      const transceiver = new Transceiver(node);
+      const transceiver = new Transceiver(node, elementId);
 
       transceivers.push(transceiver);
 
@@ -156,56 +133,59 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
       const datum = file.data[i];
       const [x, y] = datum.pos;
 
-      transceiver.setPosition(x, y);
+      transceiver.setPosition(x * 1.7 + 250, y * 0.9 + 100);
 
       if (datum.to !== void 0) {
-        const child = transceivers[datum.to];
-        if (!child) throw new Error(`Нет ноды с индексом ${datum.to}`);
+        for (let j = 0; j < datum.to.length; j++) {
+          const indexTo = datum.to[j];
+          const child = transceivers[indexTo];
+          if (!child) throw new Error(`Нет ноды с индексом ${datum.to}`);
 
-        transceiver.addChild(child);
+          transceiver.addChild(child);
+        }
       }
 
       if (datum.in !== void 0) {
-        const parent = transmitters[datum.in];
-        if (!parent) throw new Error(`Нет входа по индексу ${datum.in}`);
+        for (let j = 0; j < datum.in.length; j++) {
+          const indexIn = datum.in[j];
+          const parent = transmitters[indexIn];
+          if (!parent) throw new Error(`Нет входа по индексу ${datum.in}`);
 
-        parent.addChild(transceiver);
+          parent.addChild(transceiver);
+        }
       }
 
       if (datum.out !== void 0) {
-        const child = receivers[datum.out];
-        if (!child) throw new Error(`Нет выхода по индексу ${datum.out}`);
+        for (let j = 0; j < datum.out.length; j++) {
+          const indexOut = datum.out[j];
+          const child = receivers[indexOut];
+          if (!child) throw new Error(`Нет выхода по индексу ${datum.out}`);
 
-        transceiver.addChild(child);
+          transceiver.addChild(child);
+        }
       }
     }
 
     transceivers.forEach(node => {
       const [x, y] = node.getPosition();
+      const newX = x;
 
-      node.setPosition(x * 2 + 400, y * 2 + 400);
+      node.setPosition(newX, y);
     });
 
-    let left = Infinity;
-    let right = -Infinity;
-    transceivers.forEach(node => {
-      const [x] = node.getPosition();
+    const boundingBox = BoundingBox.fromVertices(
+      transceivers.map(transceiver => transceiver.getPosition()),
+    );
 
-      if (x > right) right = x;
-      if (left > x) left = x;
-    });
-
-    transmitters.forEach((node, index) => {
-      const [, y] = node.getPosition();
-
-      node.setPosition(left - 200, y + index * 100 + 400);
-    });
-    receivers.forEach((node, index) => {
-      const [, y] = node.getPosition();
-
-      node.setPosition(left + 200, y + index * 100 + 400);
-    });
-  });
+    transmitters.forEach((node, index) => node.setPosition(
+      boundingBox.ax - 200,
+      boundingBox.ay + index * 100,
+    ));
+    receivers.forEach((node, index) => node.setPosition(
+      boundingBox.bx + 200,
+      boundingBox.ay + index * 100,
+    ));
+  }
 
   p.setup = () => {
     const renderer = p.createCanvas(1, 1, P2D, canvasController.canvas);
@@ -222,6 +202,8 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
     canvasController.setSize = p.resizeCanvas.bind(p);
 
     canvasController.resizeHandler();
+
+    FileRepository.get(103).then(drawFile);
   };
 
   p.draw = () => {
@@ -260,10 +242,23 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
     drawText(`tool: ${tool}`);
   };
 
+  let resizeTimeout = NaN;
+  const beforeResize = () => {
+    Interactive.animationStart();
+
+    window.clearTimeout(resizeTimeout);
+  };
+
   canvasController.resized = () => {
     const {width, height} = p;
+
     centerX = width / 2;
     centerY = height / 2;
+
+    Interactive.animationStop();
+
+    window.clearTimeout(resizeTimeout);
+    resizeTimeout = window.setTimeout(beforeResize, 500);
   };
 
   p.keyPressed = (event: KeyboardEvent) => {

@@ -9,6 +9,8 @@ class CanvasController {
 
     this.binds();
 
+    window.addEventListener('resize', this.resizeHandler);
+
     this.resizeHandler();
   }
 
@@ -53,5 +55,3 @@ export type {
 };
 
 export const canvasController = new CanvasController();
-
-window.addEventListener('resize', canvasController.resizeHandler);

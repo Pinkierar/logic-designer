@@ -1,4 +1,4 @@
-import {Shape} from '#graphics';
+import {Shape, Vector2f} from '#graphics';
 import {Entity, EntityOptions} from './Entity';
 
 type InteractableOptions = EntityOptions & {
@@ -8,6 +8,7 @@ type InteractableOptions = EntityOptions & {
 export class Interactive<E extends Entity = Entity, S extends Shape = Shape> extends Entity<S> {
   private static interactives: Interactive[] = [];
   private static currentInsideZIndex: number = -Infinity;
+  private static animated: boolean = false;
 
   private zIndex!: number;
   private readonly controlled: E;
@@ -23,6 +24,14 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
 
     this.setZIndex(options?.zIndex ?? 1);
     this.controlled = controlled;
+  }
+
+  public static animationStart(): void {
+    Interactive.animated = true;
+  }
+
+  public static animationStop(): void {
+    Interactive.animated = false;
   }
 
   public static update(x: number, y: number): void {
@@ -63,8 +72,29 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
     return this.realIsInside;
   }
 
+  public override getAnimatedPosition(): Vector2f {
+    return this.controlled.getPosition();
+  }
+
   public override draw(): void {
+    if (Interactive.animated) return this.drawAnimated();
+
+    const {positionX: iPositionX, positionY: iPositionY, controlled} = this;
+
+    controlled.setPosition(iPositionX, iPositionY);
+
+    controlled.draw();
+  }
+
+  public drawBoundingEntity(): void {
+    super.draw();
+  }
+
+  //
+
+  private drawAnimated(): void {
     const {p, positionX: iPositionX, positionY: iPositionY, controlled} = this;
+
     const {width, height} = p;
     const [cPositionX, cPositionY] = controlled.getPosition();
     const offsetX = iPositionX - cPositionX;
@@ -81,12 +111,6 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
 
     Interactive.currentInsideZIndex = -Infinity;
   }
-
-  public drawBoundingEntity(): void {
-    super.draw();
-  }
-
-  //
 
   private _isInside(x: number, y: number): boolean {
     if (Interactive.currentInsideZIndex > this.zIndex) return false;

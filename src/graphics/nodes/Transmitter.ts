@@ -23,13 +23,16 @@ export abstract class Transmitter extends LogicNode {
 
   public override draw(): void {
     const {p, children} = this;
-    const [x, y] = this.getPosition();
+    const [x, y] = this.getAnimatedPosition();
 
+    p.push();
+    p.stroke(p.color(0, 0, 100, 0.5));
     for (const child of children) {
-      const [childX, childY] = child.getPosition();
+      const [childX, childY] = child.getAnimatedPosition();
 
       p.line(x, y, childX, childY);
     }
+    p.pop();
 
     super.draw();
   }
