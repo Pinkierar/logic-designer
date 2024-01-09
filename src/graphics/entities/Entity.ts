@@ -32,9 +32,17 @@ export class Entity<S extends Shape = Shape> extends Drawable {
   public setStyle(patch: Style): void {
     const {style, defaultStyle} = this;
 
-    style.stroke = patch.stroke ?? defaultStyle.stroke;
-    style.strokeWeight = patch.strokeWeight ?? defaultStyle.strokeWeight;
-    style.fill = patch.fill ?? defaultStyle.fill;
+    if (patch.stroke !== void 0) {
+      style.stroke = patch.stroke ?? defaultStyle.stroke;
+    }
+
+    if (patch.strokeWeight !== void 0) {
+      style.strokeWeight = patch.strokeWeight ?? defaultStyle.strokeWeight;
+    }
+
+    if (patch.fill !== void 0) {
+      style.fill = patch.fill ?? defaultStyle.fill;
+    }
   }
 
   public getStyle(): Readonly<Style> {

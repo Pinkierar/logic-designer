@@ -25,14 +25,14 @@ export abstract class Transmitter extends LogicNode {
   }
 
   public override draw(): void {
-    const {p, children} = this;
+    const {p, children, state} = this;
     const hatchOffset = this.hatchOffset += p.deltaTime;
     const hatchLength = 10;
     const [x, y] = this.getAnimatedPosition();
 
     p.push();
 
-    p.stroke(p.color(0, 0, 100, 0.5));
+    p.stroke(p.color(180, state ? 50 : 0, state ? 50 : 30));
     p.strokeWeight(5);
 
     for (const child of children) {

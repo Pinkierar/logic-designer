@@ -15,8 +15,8 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
   private currentIsInside: boolean = false;
   private realIsInside: boolean = false;
 
-  public enter: () => void = () => void 0;
-  public leave: () => void = () => void 0;
+  private enterHandlers: (() => void)[] = [];
+  private leaveHandlers: (() => void)[] = [];
 
   public constructor(controlled: E, shape: S, options?: InteractableOptions) {
     super(shape, options);
@@ -90,7 +90,23 @@ export class Interactive<E extends Entity = Entity, S extends Shape = Shape> ext
     super.draw();
   }
 
+  public addEnterListener(handler: (this: Interactive) => void): void {
+    this.enterHandlers.push(handler.bind(this));
+  }
+
+  public addLeaveListener(handler: (this: Interactive) => void): void {
+    this.leaveHandlers.push(handler.bind(this));
+  }
+
   //
+
+  private enter() {
+    this.enterHandlers.forEach(enterHandler => enterHandler());
+  }
+
+  private leave() {
+    this.leaveHandlers.forEach(leaveHandler => leaveHandler());
+  }
 
   private drawAnimated(): void {
     const {p, positionX: iPositionX, positionY: iPositionY, controlled} = this;

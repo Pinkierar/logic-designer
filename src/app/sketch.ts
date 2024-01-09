@@ -70,14 +70,14 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
     cursor = HAND;
   };
   const onEntityLeave = function (this: Interactive): void {
-    this.getControlled().setStyle({});
+    this.getControlled().setStyle({stroke: null});
     mouseAbove = null;
 
     cursor = ARROW;
   };
   const activateNodeInteractive = (node: Interactive) => {
-    node.enter = onEntityJoin;
-    node.leave = onEntityLeave;
+    node.addEnterListener(onEntityJoin);
+    node.addLeaveListener(onEntityLeave);
 
     return node;
   };
@@ -97,6 +97,18 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
         color: 234,
       }));
       const button = new Button(node);
+      node.addEnterListener(() => {
+        button.turnOn();
+        node.getControlled().setStyle({fill: [234, 50, 70]});
+        const r = (node: Transmitter) => {
+          for (const child of node.getChildren()) {
+            child.turnOn();
+            if (child instanceof Receiver) continue;
+            r(child);
+          }
+        };
+        r(button);
+      });
 
       transmitters.push(button);
 
