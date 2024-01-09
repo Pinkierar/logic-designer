@@ -1,25 +1,25 @@
-import type {Positioned, Vector2f} from '#graphics';
+import type {Interactive, Vector2f} from '#graphics';
 import {Drawable} from '#graphics';
 
 export abstract class LogicNode extends Drawable {
-  protected positioned: Positioned;
+  protected controlled: Interactive;
   public getPosition: () => Vector2f;
   public getAnimatedPosition: () => Vector2f;
   public setPosition: (x: number, y: number) => void;
 
-  constructor(positioned: Positioned) {
+  constructor(controlled: Interactive) {
     super();
 
-    this.positioned = positioned;
+    this.controlled = controlled;
 
-    this.getPosition = this.positioned.getPosition.bind(this.positioned);
-    this.getAnimatedPosition = this.positioned.getAnimatedPosition.bind(this.positioned);
-    this.setPosition = this.positioned.setPosition.bind(this.positioned);
+    this.getPosition = this.controlled.getPosition.bind(this.controlled);
+    this.getAnimatedPosition = this.controlled.getAnimatedPosition.bind(this.controlled);
+    this.setPosition = this.controlled.setPosition.bind(this.controlled);
   }
 
   public draw(): void {
-    const {positioned} = this;
+    const {controlled} = this;
 
-    positioned.draw();
+    controlled.draw();
   }
 }

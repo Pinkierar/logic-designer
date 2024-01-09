@@ -1,6 +1,6 @@
+export * from './defines';
 export * from './Vector';
 export * from './Style';
-export * from './Positioned';
 export * from './Contextual';
 export * from './Drawable';
 export * from './shapes';

@@ -1,9 +1,16 @@
 import {CanvasController} from '#app';
-import {Circle, Interactive, Receiver, Transceiver, Transmitter} from '#graphics';
+import {
+  BoundingBox,
+  Button,
+  Circle,
+  Interactive,
+  Lamp,
+  Receiver,
+  Transceiver,
+  Transmitter,
+} from '#graphics';
 import {FileData, FileRepository} from '#repositories';
 import {CURSOR_TYPE} from 'p5';
-import {Button, Lamp} from '../graphics/nodes/io';
-import {BoundingBox} from '../graphics/shapes/BoundingBox';
 
 const NOISE_MAX = 15.5;
 
@@ -133,7 +140,7 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
       const datum = file.data[i];
       const [x, y] = datum.pos;
 
-      transceiver.setPosition(x * 1.7 + 250, y * 0.9 + 100);
+      transceiver.setPosition(x * 0.7 + 200, y * 0.7 + 100);
 
       if (datum.to !== void 0) {
         for (let j = 0; j < datum.to.length; j++) {
@@ -178,14 +185,14 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
     );
 
     transmitters.forEach((node, index) => node.setPosition(
-      boundingBox.ax - 200,
+      boundingBox.ax - 150,
       boundingBox.ay + index * 100,
     ));
     receivers.forEach((node, index) => node.setPosition(
-      boundingBox.bx + 200,
+      boundingBox.bx + 150,
       boundingBox.ay + index * 100,
     ));
-  }
+  };
 
   p.setup = () => {
     const renderer = p.createCanvas(1, 1, P2D, canvasController.canvas);

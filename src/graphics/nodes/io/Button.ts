@@ -1,4 +1,4 @@
-import {Transmitter} from '#graphics';
+import {Transmitter} from '../Transmitter';
 
 export class Button extends Transmitter {
 

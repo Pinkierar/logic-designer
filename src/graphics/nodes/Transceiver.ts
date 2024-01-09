@@ -1,11 +1,11 @@
-import type {Positioned} from '../Positioned';
+import type {Interactive} from '../entities';
 import {Transmitter} from './Transmitter';
 
 export class Transceiver extends Transmitter {
   private elementId: number;
 
-  public constructor(positioned: Positioned, elementId: number) {
-    super(positioned);
+  public constructor(controlled: Interactive, elementId: number) {
+    super(controlled);
 
     this.elementId = elementId;
   }
@@ -15,12 +15,12 @@ export class Transceiver extends Transmitter {
 
     const {p, elementId} = this;
     const [x, y] = this.getAnimatedPosition();
-    (globalThis as any).pp = [x, y]
+    (globalThis as any).pp = [x, y];
 
     p.push();
     p.noStroke();
     p.fill(p.color(0, 0, 100));
-    p.textAlign(p.CENTER, p.CENTER)
+    p.textAlign(p.CENTER, p.CENTER);
     p.text(elementId, x, y);
     p.pop();
   }

@@ -1,3 +1,4 @@
+export * from './BoundingBox';
 export * from './Void';
 export type * from './Shape';
 export * from './Circle';

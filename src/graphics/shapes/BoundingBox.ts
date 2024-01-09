@@ -1,4 +1,4 @@
-import {Vector2f, Vector4f} from '#graphics';
+import type {Vector2f, Vector4f} from '#graphics';
 
 export class BoundingBox {
   public constructor(
