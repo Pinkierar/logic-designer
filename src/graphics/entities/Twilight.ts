@@ -174,7 +174,7 @@ export class Twilight extends Interactive<Entity<GroupShape<PolygonShape[]>>, Po
           },
         },
       ),
-      new PolygonShape(vertices.bounding),
+      new PolygonShape(vertices.bounding.map(vertex => [vertex[0] * scale, vertex[1] * scale])),
       {
         zIndex: zIndex,
       },

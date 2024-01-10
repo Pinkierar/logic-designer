@@ -8,6 +8,7 @@ import {
   Receiver,
   Transceiver,
   Transmitter,
+  Twilight,
 } from '#graphics';
 import {FileData, FileRepository} from '#repositories';
 import {CURSOR_TYPE} from 'p5';
@@ -119,9 +120,10 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
       const datum = file.data[i];
       const elementId = datum.el;
 
-      const node = activateNodeInteractive(new Circle({
+      const node = activateNodeInteractive(new Twilight({
         zIndex: count,
-        radius: 60,
+        scale: 0.15,
+        // radius: 60,
         color: 146,
       }));
       const transceiver = new Transceiver(node, elementId);
@@ -222,7 +224,15 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
 
     canvasController.resizeHandler();
 
-    FileRepository.get(103).then(drawFile);
+    const query = Object.fromEntries(window.location.search
+      .slice(1)
+      .split(';')
+      .map(item => item
+        .split('=')));
+    const fileId = typeof query.id === 'string' ? Number(query.id) : 103;
+    FileRepository.get(fileId).then(drawFile).catch(() => {
+      FileRepository.get(103).then(drawFile);
+    });
   };
 
   p.draw = () => {
