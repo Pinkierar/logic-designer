@@ -48,8 +48,11 @@ export type FileData = FileMinData & {
   // количество IO выходов (если 1, то неограниченно)
   out: Count,
 
-  // логика элемента (если null, то логика определена в коде)
-  data: Node[] | null,
+  // логика элемента (если отсутствует, значит логика определена в коде)
+  data?: Node[],
+
+  // формула (если отсутствует, значит логика определена в коде)
+  fx?: string,
 };
 
 export const FileRepository = new class FileRepository extends Repository<FileData> {

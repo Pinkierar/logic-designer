@@ -22,8 +22,16 @@ export abstract class LogicNode extends Drawable {
     this.state = true;
   }
 
+  public turnSwitch() {
+    this.state = !this.state;
+  }
+
   public turnOff() {
     this.state = false;
+  }
+
+  public getState(): boolean {
+    return this.state;
   }
 
   public draw(): void {

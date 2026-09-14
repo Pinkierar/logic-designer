@@ -1,7 +1,8 @@
 [
   {"id": 0, "name": "root", "directories": [
     {"id": 1, "name": "Базовые"},
-    {"id": 2, "name": "Триггеры"}
+    {"id": 2, "name": "Триггеры"},
+    {"id": 3, "name": "Комплексные"}
   ]},
   {"id": 1, "name": "Базовые", "files": [
     {"id": 1, "name": "not"},
@@ -11,5 +12,8 @@
   ]},
   {"id": 2, "name": "Триггеры", "files": [
     {"id": 102, "name": "rs-trigger"}
+  ]},
+  {"id": 3, "name": "Комплексные", "files": [
+    {"id": 103, "name": "adder"}
   ]}
 ]

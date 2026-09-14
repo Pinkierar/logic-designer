@@ -1,8 +1,12 @@
+import type {OpenFileHandler} from '#components/Explorer/Context';
+import {FileMinData} from '#repositories';
+
 class CanvasController {
   public parent: HTMLElement | null = null;
   public readonly canvas: HTMLCanvasElement;
   public setSize?: (width: number, height: number) => void;
   public resized = () => void 0;
+  public onOpenFile: OpenFileHandler = () => void 0;
 
   public constructor() {
     this.canvas = CanvasController.createCanvas();
@@ -22,20 +26,22 @@ class CanvasController {
   }
 
   public resizeHandler(): void {
-    const {parent, resized} = this;
-
-    if (!parent || !this.setSize) return;
+    if (!this.parent || !this.setSize) return;
 
     const zoom = window.devicePixelRatio;
 
-    const {width, height} = parent.getBoundingClientRect();
+    const {width, height} = this.parent.getBoundingClientRect();
 
     const sizeWidth = width;
     const sizeHeight = height;
 
     this.setSize(sizeWidth * zoom, sizeHeight * zoom);
 
-    resized();
+    this.resized();
+  }
+
+  public openFileHandler(fileData: FileMinData): void {
+    this.onOpenFile(fileData);
   }
 
   private static createCanvas(): HTMLCanvasElement {
@@ -47,6 +53,7 @@ class CanvasController {
 
   private binds(): void {
     this.resizeHandler = this.resizeHandler.bind(this);
+    this.openFileHandler = this.openFileHandler.bind(this);
   }
 }
 

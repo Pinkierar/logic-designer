@@ -95,7 +95,11 @@ export const App = memo(() => {
       <List gap={0} vertical={true} className={style.base}>
         <MenuHeader className={style.menu} items={menuItems} callback={menuCallback}/>
         <List gap={0} className={style.content}>
-          <Explorer onResize={canvasController.resizeHandler} className={style.explorer}/>
+          <Explorer
+            onResize={canvasController.resizeHandler}
+            onOpenFile={canvasController.openFileHandler}
+            className={style.explorer}
+          />
           <View className={style.view} controller={canvasController}/>
         </List>
         <Dialog current={dialog}/>

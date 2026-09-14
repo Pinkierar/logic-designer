@@ -99,15 +99,19 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
       }));
       const button = new Button(node);
       node.addEnterListener(() => {
-        button.turnOn();
-        node.getControlled().setStyle({fill: [234, 50, 70]});
-        const r = (node: Transmitter) => {
+        const r = async (node: Transmitter) => {
+          await new Promise(resolve => window.setTimeout(resolve, 50));
+
           for (const child of node.getChildren()) {
-            child.turnOn();
             if (child instanceof Receiver) continue;
-            r(child);
+
+            child.turnSwitch();
+            await r(child);
           }
         };
+
+        node.getControlled().setStyle({fill: button.getState() ? null : [234, 50, 70]});
+        button.turnSwitch();
         r(button);
       });
 
@@ -208,6 +212,10 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
     ));
   };
 
+  canvasController.onOpenFile = fileData => {
+    FileRepository.get(fileData.id).then(drawFile);
+  };
+
   p.setup = () => {
     const renderer = p.createCanvas(1, 1, P2D, canvasController.canvas);
 
@@ -224,15 +232,7 @@ export const sketch = (canvasController: CanvasController, p: P5Type): void => {
 
     canvasController.resizeHandler();
 
-    const query = Object.fromEntries(window.location.search
-      .slice(1)
-      .split(';')
-      .map(item => item
-        .split('=')));
-    const fileId = typeof query.id === 'string' ? Number(query.id) : 103;
-    FileRepository.get(fileId).then(drawFile).catch(() => {
-      FileRepository.get(103).then(drawFile);
-    });
+    FileRepository.get(103).then(drawFile);
   };
 
   p.draw = () => {

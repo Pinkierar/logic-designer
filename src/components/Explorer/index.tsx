@@ -2,14 +2,14 @@ import {List} from '#components/atoms';
 import {useDialogContext} from '#components/Dialog';
 import {Menu} from '#components/Menu';
 import {useClickOutside, useEventListener, useLocalStorage, useResized, useToggle} from '#hooks';
-import {DirectoryData, DirectoryRepository} from '#repositories/Directory';
+import {DirectoryData, DirectoryRepository} from '#repositories';
 import {checkNever} from '#utils/checkNever';
 import {classNames} from '#utils/classNames';
 import type {InlineStyle} from '#utils/InlineStyle';
 import type {IncludeHTMLProps, OmitChildren} from '#utils/props';
 import {Dispatch, memo, SetStateAction, useEffect, useMemo, useRef, useState} from 'react';
 import {GrContract, GrExpand, GrStorage, GrTarget, GrUpdate} from 'react-icons/gr';
-import {ExplorerContextProvider, MenuOptions} from './Context';
+import {ExplorerContextProvider, MenuOptions, OpenFileHandler} from './Context';
 import {Directory} from './Directory';
 import style from './style.module.scss';
 
@@ -43,12 +43,14 @@ type MenuState = {
 
 type ExplorerProps = OmitChildren<IncludeHTMLProps<{
   onResize?: () => void,
+  onOpenFile: OpenFileHandler
 }>>;
 
 export const Explorer = memo<ExplorerProps>(props => {
   const {
     className,
     onResize,
+    onOpenFile,
     ...otherProps
   } = props;
 
@@ -206,6 +208,7 @@ export const Explorer = memo<ExplorerProps>(props => {
               addSetCollapsed: collapsedSetters.add.bind(collapsedSetters),
               removeSetCollapsed: collapsedSetters.delete.bind(collapsedSetters),
               showMenu: showMenu,
+              onOpenFile: onOpenFile,
             }}>
               {rootDirectories.map(directory => (
                 <Directory key={directory.id} minData={directory}/>
